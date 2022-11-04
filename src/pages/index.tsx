@@ -1,4 +1,12 @@
+import { trpc } from "@/utils/trpc";
+
 export default function Home() {
+  const {data, isLoading} = trpc.hello.useQuery({text: "Dani"})
+
+  if (isLoading) return <div>Loading...</div>
+
+  if (data) return <div>{data.greeting}</div>
+
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
       <div className="text-4xl text-center p-4">Manga Recommender</div>
