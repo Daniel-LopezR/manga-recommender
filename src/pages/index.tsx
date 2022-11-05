@@ -1,11 +1,13 @@
+import { getRandomManga } from "@/utils/getRandomManga";
 import { trpc } from "@/utils/trpc";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const {data, isLoading} = trpc.hello.useQuery({text: "Dani"})
+  //const {data, isLoading} = trpc.hello.useQuery({text: "Dani"})
 
-  if (isLoading) return <div>Loading...</div>
+  const [mangaId, setMangaId] = useState(0);
 
-  if (data) return <div>{data.greeting}</div>
+  useEffect(() => setMangaId(getRandomManga()), [])
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
@@ -31,8 +33,8 @@ export default function Home() {
       </div>
       <div className="p-2" />
       <div className="flex flex-col justify-center items-center">
-        <div className="text-2xl text-center p-4 bg-transparent shadow-white transition-shadow">Title</div>
-        <img className="shadow-2xl shadow-white  rounded-lg transition" src="goto.jpeg" alt="manga cover" width={256} />
+        <div className="text-2xl text-center p-4">{mangaId}</div>
+        <img className="shadow-md shadow-white  rounded-lg transition" src="goto.jpeg" alt="manga cover" width={256} />
         <div className="p-2" />
         <button className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition">+ Info</button>
       </div>
