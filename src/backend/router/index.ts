@@ -1,16 +1,73 @@
-import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
+import { z } from "zod";
+import { publicProcedure, router } from "../trpc";
+
+type manga = {
+  id: number;
+  title: string;
+  main_picture: {
+    medium: string;
+    large: string;
+  };
+  alternative_titles: {
+    synonyms: [string[]];
+    en: string;
+    ja: string;
+  };
+  synopsis: string;
+  status: string;
+  genres: [
+    {
+      name: string;
+    }
+  ];
+  my_list_status: {
+    status: string;
+    is_rereading: boolean;
+    num_volumes_read: number;
+    num_chapters_read: number;
+    score: number;
+    updated_at: Date;
+  };
+  authors: [
+    {
+      author: {
+        first_name: string;
+        last_name: string;
+      };
+      role: string;
+    }
+  ];
+};
+
+function api<T>(id: number): Promise<T> {
+  return fetch(
+    `https://api.myanimelist.net/v2/manga/${id}?fields=id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-MAL-CLIENT-ID": `${process.env.MAL_CLIENT_ID}`,
+      },
+    }
+  ).then((response) => {
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    return response.json();
+  });
+}
 
 export const appRouter = router({
-  hello: publicProcedure
+  "get-manga-by-id": publicProcedure
     .input(
       z.object({
-        text: z.string().nullish(),
-      }),
+        id: z.number(),
+      })
     )
-    .query(({ input }) => {
+    .query(async ({ input }) => {
+      const manga = await api<manga>(input.id);
       return {
-        greeting: `hello ${input?.text ?? 'world'}`,
+        manga: manga,
       };
     }),
 });

@@ -1,13 +1,19 @@
 import { getRandomManga } from "@/utils/getRandomManga";
 import { trpc } from "@/utils/trpc";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
-  //const {data, isLoading} = trpc.hello.useQuery({text: "Dani"})
+  const [mangaId, setMangaId] = useState(() => getRandomManga());
 
-  const [mangaId, setMangaId] = useState(0);
+  const { data, isLoading } = trpc["get-manga-by-id"].useQuery({ id: mangaId });
 
-  useEffect(() => setMangaId(getRandomManga()), [])
+  if (isLoading) {
+    return null;
+  }
+
+  console.log(data);
+
+  const dataLoaded = !isLoading && data;
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
@@ -31,15 +37,37 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="p-2" />
-      <div className="flex flex-col justify-center items-center">
-        <div className="text-2xl text-center p-4">{mangaId}</div>
-        <img className="shadow-md shadow-white  rounded-lg transition" src="goto.jpeg" alt="manga cover" width={256} />
-        <div className="p-2" />
-        <button className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition">+ Info</button>
-      </div>
       <div className="p-4" />
-      <button className=" p-2 border rounded-2xl w-64 hover:bg-red-900 transition">Recommend me!</button>
+      <button className=" p-2 border rounded-2xl w-64 hover:bg-red-900 transition">
+        Recommend me!
+      </button>
+      <div className="p-2" />
+      {dataLoaded && (
+        <div className="flex flex-col justify-center items-center">
+          <div className="text-2xl text-center p-4 w-128">
+            {data?.manga.title}
+          </div>
+          <img
+            className="shadow-md shadow-white rounded-lg"
+            src={data?.manga.main_picture.large}
+            alt={data?.manga.title + " manga cover"}
+            width={256}
+          />
+
+          <div className="p-2" />
+          <a
+            href=""
+            className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
+          >
+            + Info
+          </a>
+        </div>
+      )}
+      {!dataLoaded && (
+        <div className="flex flex-col justify-center p-60">
+          <img src="ball-triangle.svg" />
+        </div>
+      )}
     </div>
   );
 }
