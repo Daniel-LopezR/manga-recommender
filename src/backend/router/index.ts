@@ -39,9 +39,11 @@ type manga = {
   ];
 };
 
+const fields = "id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}";
+
 function api<T>(id: number): Promise<T> {
   return fetch(
-    `https://api.myanimelist.net/v2/manga/${id}?fields=id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}`,
+    `https://api.myanimelist.net/v2/manga/${id}?fields=${fields}`,
     {
       method: "GET",
       headers: {
@@ -49,11 +51,17 @@ function api<T>(id: number): Promise<T> {
         "X-MAL-CLIENT-ID": `${process.env.MAL_CLIENT_ID}`,
       },
     }
-  ).then((response) => {
-    if (!response.ok) {
+  ).then(async(response) => {
+    console.log(id);
+    const data = await response.json();
+    if(response.ok){
+      return data;
+    }else if(data.error === "not_found") {
+      console.log("Id not found");
+      return await api<manga>(id + 1);
+    }else{
       throw new Error(response.statusText);
     }
-    return response.json();
   });
 }
 

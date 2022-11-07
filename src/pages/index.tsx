@@ -4,15 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [mangaId, setMangaId] = useState(() => getRandomManga());
-
   const { data, isLoading } = trpc["get-manga-by-id"].useQuery({ id: mangaId });
-
-  if (isLoading) {
-    return null;
-  }
-
-  console.log(data);
-
   const dataLoaded = !isLoading && data;
 
   return (
@@ -45,15 +37,25 @@ export default function Home() {
       {dataLoaded && (
         <div className="flex flex-col justify-center items-center">
           <div className="text-2xl text-center p-4 w-128">
-            {data?.manga.title}
+            {data?.manga.alternative_titles.ja === ""
+              ? data?.manga.title
+              : data?.manga.title + " - " + data?.manga.alternative_titles.ja}
           </div>
-          <img
-            className="shadow-md shadow-white rounded-lg"
-            src={data?.manga.main_picture.large}
-            alt={data?.manga.title + " manga cover"}
-            width={256}
-          />
-
+          {data?.manga.main_picture !== undefined ? (
+            <img
+              className="shadow-md shadow-white rounded-lg"
+              src={data?.manga.main_picture.large}
+              alt={data?.manga.title + " manga cover"}
+              width={256}
+            />
+          ) : (
+            <img
+              className="p-6 invert"
+              src={"question-mark.svg"}
+              alt={data?.manga.title + " doesn't have manga cover"}
+              width={256}
+            />
+          )}
           <div className="p-2" />
           <a
             href=""
