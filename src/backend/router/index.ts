@@ -1,7 +1,21 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 
-type manga = {
+export type Manga = {
+  id: number;
+  title: string;
+  main_picture: {
+    medium: string;
+    large: string;
+  };
+  alternative_titles: {
+    synonyms: [string[]];
+    en: string;
+    ja: string;
+  };
+};
+
+type MangaInfo = {
   id: number;
   title: string;
   main_picture: {
@@ -39,11 +53,12 @@ type manga = {
   ];
 };
 
-const fields = "id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}";
+const infoFields = "id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}";
+const standFields = "id,title,main_picture,alternative_titles";
 
 function api<T>(id: number): Promise<T> {
   return fetch(
-    `https://api.myanimelist.net/v2/manga/${id}?fields=${fields}`,
+    `https://api.myanimelist.net/v2/manga/${id}?fields=${standFields}`,
     {
       method: "GET",
       headers: {
@@ -58,7 +73,7 @@ function api<T>(id: number): Promise<T> {
       return data;
     }else if(data.error === "not_found") {
       console.log("Id not found");
-      return await api<manga>(id + 1);
+      return await api<Manga>(id + 1);
     }else{
       throw new Error(response.statusText);
     }
@@ -73,7 +88,7 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const manga = await api<manga>(input.id);
+      const manga = await api<Manga>(input.id);
       return {
         manga: manga,
       };
