@@ -3,6 +3,8 @@ import { trpc } from "@/utils/trpc";
 import React, { useState } from "react";
 import { inferQueryResponse } from "./api/trpc/[trpc]";
 
+import Image from "next/image";
+
 export default function Home() {
   const [mangaId, setMangaId] = useState(() => getRandomManga());
   const { data, isLoading } = trpc["get-manga-by-id"].useQuery({ id: mangaId });
@@ -10,7 +12,7 @@ export default function Home() {
 
   const recommendMe = () => {
     setMangaId(() => getRandomManga(mangaId));
-  }
+  };
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center">
@@ -35,54 +37,72 @@ export default function Home() {
         </div>
       </div>
       <div className="p-4" />
-      <button onClick={recommendMe} className="py-2 px-4 border rounded-full hover:bg-red-900 transition">
+      <button
+        onClick={recommendMe}
+        className="py-2 px-4 border rounded-full hover:bg-red-900 transition"
+      >
         Recommend me!
       </button>
       <div className="p-2" />
-      <div className="flex-1 w-80 h-full pl-4 pr-4 pb-4">
-        {dataLoaded && (
-          <MangaStand manga={data}/>
-        )}
+      <div className="flex-1 w-96 h-2/3 pl-4 pr-4 pb-4">
+        {dataLoaded && <MangaStand manga={data} />}
         {!dataLoaded && (
           <div className="flex flex-col justify-center items-center h-full">
-            <img className="" src="ball-triangle.svg"/>
+            <img className="" src="ball-triangle.svg" />
           </div>
         )}
       </div>
-      <div className="text-1xl text-center p-4 justify-self-end "><a href="https://github.com/Daniel-LopezR/manga-recommender" target="_blank">GitHub</a></div>
+      <div className="text-1xl text-center p-4 bottom-0">
+        <a
+          href="https://github.com/Daniel-LopezR/manga-recommender"
+          target="_blank"
+        >
+          GitHub
+        </a>
+      </div>
     </div>
   );
 }
 
-
 type MangaFromServer = inferQueryResponse<"get-manga-by-id">;
 
-const MangaStand: React.FC<{manga: MangaFromServer}> = (props) => {
-  return (<div className="flex flex-col justify-center items-center h-full">
-  <div className="text-2xl text-center p-2">
-    {props.manga.manga.alternative_titles.ja === ""
-      ? props.manga.manga.title
-      : props.manga.manga.title + " - " + props.manga.manga.alternative_titles.ja}
-  </div>
-  {props.manga.manga.main_picture !== undefined ? (
-    <img
-      className="shadow-md shadow-white rounded-lg h-full w-full"
-      src={props.manga.manga.main_picture.large}
-      alt={props.manga.manga.title + " manga cover"}
-    />
-  ) : (
-    <img
-      className="p-6 invert h-full w-full"
-      src={"question-mark.svg"}
-      alt={props.manga.manga.title + " doesn't have manga cover"}
-    />
-  )}
-  <div className="p-2" />
-  <a
-    href={"/" + props.manga.manga.id}
-    className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
-  >
-    + Info
-  </a>
-</div>);
-}
+const MangaStand: React.FC<{ manga: MangaFromServer }> = (props) => {
+  return (
+    <div className="flex flex-col justify-center items-center w-full h-full">
+      <div className="text-2xl text-center p-2">
+        {props.manga.manga.alternative_titles.ja === ""
+          ? props.manga.manga.title
+          : props.manga.manga.title +
+            " - " +
+            props.manga.manga.alternative_titles.ja}
+      </div>
+      <div className="relative w-80 h-5/6">
+        {props.manga.manga.main_picture !== undefined ? (
+          <Image
+            className="shadow-md shadow-white rounded-lg"
+            fill
+            sizes="(max-height: 1200px) 50vw,
+              (max-height: 768px) 100vw,
+              33vw"
+            src={props.manga.manga.main_picture.large}
+            alt={props.manga.manga.title + " manga cover"}
+          />
+        ) : (
+          <img
+            className="p-6 invert h-full w-full"
+            src={"question-mark.svg"}
+            alt={props.manga.manga.title + " doesn't have manga cover"}
+          />
+        )}
+      </div>
+
+      <div className="p-2" />
+      <a
+        href={"/" + props.manga.manga.id}
+        className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
+      >
+        + Info
+      </a>
+    </div>
+  );
+};
