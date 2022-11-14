@@ -83,7 +83,7 @@ const doBackFill = async () => {
   console.log("Demographic_Creation?", demographicsCreation);
 
   //Manga
-  for (let id = 1; id <= 2; id++) {
+  for (let id = 1; id <= 160000; id++) {
     console.log("ID -> ?", id);
     const mangaFound = await malApiCall<MangaFound>(id);
     if (mangaFound.nsfw !== "none" && mangaFound.nsfw === "white") {
