@@ -14,33 +14,33 @@ datasource db {
 }
 
 model Manga {
-  id         Int                             @id @default(autoincrement())
-  title      String
-  title_ja   String
-  img_medium String
-  img_large  String
-  genres     GenresAndDemographicsOnMangas[]
+  id            Int              @id @default(autoincrement())
+  title         String
+  title_ja      String
+  img_medium    String
+  img_large     String
+  genres        GenresOnMangas[]
+  demographic   Demographic      @relation(fields: [demographicId], references: [id])
+  demographicId Int
 }
 
 model Genre {
-  id     Int                             @id @default(autoincrement())
-  name   String                          @unique
-  mangas GenresAndDemographicsOnMangas[]
+  id     Int              @id @default(autoincrement())
+  name   String           @unique
+  mangas GenresOnMangas[]
 }
 
 model Demographic {
-  id     Int                             @id @default(autoincrement())
-  name   String                          @unique
-  mangas GenresAndDemographicsOnMangas[]
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  mangas Manga[]
 }
 
-model GenresAndDemographicsOnMangas {
-  manga         Manga       @relation(fields: [mangaId], references: [id])
-  mangaId       Int // relation scalar field (used in the `@relation` attribute above)
-  genre         Genre       @relation(fields: [genreId], references: [id])
-  genreId       Int // relation scalar field (used in the `@relation` attribute above)
-  demographic   Demographic @relation(fields: [demographicId], references: [id])
-  demographicId Int // relation scalar field (used in the `@relation` attribute above)
+model GenresOnMangas {
+  manga   Manga @relation(fields: [mangaId], references: [id])
+  mangaId Int // relation scalar field (used in the `@relation` attribute above)
+  genre   Genre @relation(fields: [genreId], references: [id])
+  genreId Int // relation scalar field (used in the `@relation` attribute above)
 
-  @@id([mangaId, genreId, demographicId])
+  @@id([mangaId, genreId])
 }

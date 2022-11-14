@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 
-export type Manga = {
+type Manga = {
   id: number;
   title: string;
   main_picture: {
@@ -56,7 +56,7 @@ type MangaInfo = {
 const infoFields = "id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}";
 const standFields = "id,title,main_picture,alternative_titles";
 
-function api<T>(id: number): Promise<T> {
+async function api<T>(id: number): Promise<T> {
   return fetch(
     `https://api.myanimelist.net/v2/manga/${id}?fields=${standFields}`,
     {

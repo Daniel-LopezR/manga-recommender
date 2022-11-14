@@ -1,5 +1,21 @@
 import { prisma } from "../src/backend/utils/prisma";
 
+type MangaFound = {
+  id: number;
+  title: string;
+  main_picture: {
+    medium: string;
+    large: string;
+  };
+  alternative_titles: {
+    synonyms: [string[]];
+    en: string;
+    ja: string;
+  };
+  genres: [{ name: string }];
+  nsfw: string;
+};
+
 const genres = [
   { name: "Action" },
   { name: "Adventure" },
@@ -22,16 +38,20 @@ const genres = [
 ];
 
 const demographics = [
-    { name: "Josei" },
-    { name: "Kids" },
-    { name: "Seinen" },
-    { name: "Shoujo" },
-    { name: "Shounen" }
-  ];
+  { name: "Josei" },
+  { name: "Kids" },
+  { name: "Seinen" },
+  { name: "Shoujo" },
+  { name: "Shounen" },
+];
 
-function malApiCall<T>(id: number): Promise<T> {
+const MAX_APROXIMATE_ID = 160000;
+
+require("dotenv").config();
+
+async function malApiCall<T>(id: number): Promise<T> {
   return fetch(
-    `https://api.myanimelist.net/v2/manga/${id}?fields=id,title,main_picture,alternative_titles`,
+    `https://api.myanimelist.net/v2/manga/${id}?fields=id,title,main_picture,alternative_titles,nsfw,genres`,
     {
       method: "GET",
       headers: {
@@ -50,18 +70,68 @@ function malApiCall<T>(id: number): Promise<T> {
 }
 
 const doBackFill = async () => {
-    // Genres
-    console.log("genres?", genres)
-    const genresCreation = await prisma.genre.createMany({data: genres});
-    console.log("Genre_Creation?", genresCreation)
+  // Genres
+  console.log("genres?", genres);
+  const genresCreation = await prisma.genre.createMany({ data: genres });
+  console.log("Genre_Creation?", genresCreation);
 
-    //Demographics
-    console.log("demographics?", demographics)
-    const demographicsCreation = await prisma.demographic.createMany({data: demographics});
-    console.log("Demographic_Creation?", demographicsCreation)
+  //Demographics
+  console.log("demographics?", demographics);
+  const demographicsCreation = await prisma.demographic.createMany({
+    data: demographics,
+  });
+  console.log("Demographic_Creation?", demographicsCreation);
 
-    //Manga
+  //Manga
+  for (let id = 1; id <= 2; id++) {
+    console.log("ID -> ?", id);
+    const mangaFound = await malApiCall<MangaFound>(id);
+    if (mangaFound.nsfw !== "none" && mangaFound.nsfw === "white") {
+      console.log("Manga Found ?", mangaFound);
+      let mangaGenres: { id: number }[] = [];
+      let mangaDemographic: { id: number } = { id: 0 };
+      for (const genre of mangaFound.genres) {
+        if (genres.find((genreFromList) => genreFromList.name === genre.name)) {
+          let queryGenre = await prisma.genre.findUnique({
+            where: { name: genre.name },
+            select: { id: true },
+          });
+          if (queryGenre != null)  mangaGenres.push(queryGenre);
+         
+        } else if (
+          demographics.find(
+            (demographicsFromList) => demographicsFromList.name === genre.name
+          )
+        ) {
+          let queryResult = await prisma.demographic.findUnique({
+            where: { name: genre.name },
+            select: { id: true },
+          });
+          if (queryResult !== null) mangaDemographic = { id: queryResult.id };
+        }
+      }
 
+      const mangaCreation = await prisma.manga.create({
+        data: {
+          title: mangaFound.title,
+          title_ja: mangaFound.alternative_titles.ja,
+          img_medium: mangaFound.main_picture.medium,
+          img_large: mangaFound.main_picture.large,
+          demographic: { connect: mangaDemographic },
+        },
+      });
+      console.log("Manga_Creation?", mangaCreation);
+      
+      for (const genre of mangaGenres) {
+        const mangaGenresCreation = await prisma.genresOnMangas.create({
+          data: { manga: { connect: { id: mangaCreation.id}}, genre: { connect: genre}},
+        });
+        console.log("Manga_Genres_Creation?", mangaGenresCreation);
+      }
+    } else {
+      console.log(mangaFound, " is not safe for work");
+    }
+  }
 };
 
 doBackFill();
