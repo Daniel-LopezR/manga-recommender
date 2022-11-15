@@ -14,6 +14,7 @@ type MangaFound = {
   };
   genres: [{ name: string }];
   nsfw: string;
+  mean: number;
 };
 
 const genres = [
@@ -35,6 +36,7 @@ const genres = [
   { name: "Sports" },
   { name: "Supernatural" },
   { name: "Suspense" },
+  { name: "N/A" },
 ];
 
 const demographics = [
@@ -43,6 +45,7 @@ const demographics = [
   { name: "Seinen" },
   { name: "Shoujo" },
   { name: "Shounen" },
+  { name: "N/A" },
 ];
 
 const MAX_APROXIMATE_ID = 160000;
@@ -51,7 +54,7 @@ require("dotenv").config();
 
 async function malApiCall<T>(id: number): Promise<T> {
   return fetch(
-    `https://api.myanimelist.net/v2/manga/${id}?fields=id,title,main_picture,alternative_titles,nsfw,genres`,
+    `https://api.myanimelist.net/v2/manga/${id}?fields=id,title,main_picture,alternative_titles,nsfw,genres,mean`,
     {
       method: "GET",
       headers: {
@@ -83,32 +86,41 @@ const doBackFill = async () => {
   console.log("Demographic_Creation?", demographicsCreation);
 
   //Manga
-  for (let id = 1; id <= 160000; id++) {
+  for (let id = 1; id <= MAX_APROXIMATE_ID; id++) {
     console.log("ID -> ?", id);
     const mangaFound = await malApiCall<MangaFound>(id);
-    if (mangaFound.nsfw !== "none" && mangaFound.nsfw === "white") {
+    if (
+      mangaFound.title !== "none" &&
+      mangaFound.nsfw === "white" &&
+      mangaFound.mean >= 7.0
+    ) {
       console.log("Manga Found ?", mangaFound);
       let mangaGenres: { id: number }[] = [];
-      let mangaDemographic: { id: number } = { id: 0 };
-      for (const genre of mangaFound.genres) {
-        if (genres.find((genreFromList) => genreFromList.name === genre.name)) {
-          let queryGenre = await prisma.genre.findUnique({
-            where: { name: genre.name },
-            select: { id: true },
-          });
-          if (queryGenre != null)  mangaGenres.push(queryGenre);
-         
-        } else if (
-          demographics.find(
-            (demographicsFromList) => demographicsFromList.name === genre.name
-          )
-        ) {
-          let queryResult = await prisma.demographic.findUnique({
-            where: { name: genre.name },
-            select: { id: true },
-          });
-          if (queryResult !== null) mangaDemographic = { id: queryResult.id };
+      let mangaDemographic: { id: number } = { id: 6 };
+      if (mangaFound.genres) {
+        for (const genre of mangaFound.genres) {
+          if (
+            genres.find((genreFromList) => genreFromList.name === genre.name)
+          ) {
+            let queryGenre = await prisma.genre.findUnique({
+              where: { name: genre.name },
+              select: { id: true },
+            });
+            if (queryGenre != null) mangaGenres.push(queryGenre);
+          } else if (
+            demographics.find(
+              (demographicsFromList) => demographicsFromList.name === genre.name
+            )
+          ) {
+            let queryResult = await prisma.demographic.findUnique({
+              where: { name: genre.name },
+              select: { id: true },
+            });
+            if (queryResult !== null) mangaDemographic = { id: queryResult.id };
+          }
         }
+      } else {
+        mangaGenres.push({ id: 19 });
       }
 
       const mangaCreation = await prisma.manga.create({
@@ -121,15 +133,18 @@ const doBackFill = async () => {
         },
       });
       console.log("Manga_Creation?", mangaCreation);
-      
+
       for (const genre of mangaGenres) {
         const mangaGenresCreation = await prisma.genresOnMangas.create({
-          data: { manga: { connect: { id: mangaCreation.id}}, genre: { connect: genre}},
+          data: {
+            manga: { connect: { id: mangaCreation.id } },
+            genre: { connect: genre },
+          },
         });
         console.log("Manga_Genres_Creation?", mangaGenresCreation);
       }
     } else {
-      console.log(mangaFound, " is not safe for work");
+      console.log(mangaFound, " is not valid");
     }
   }
 };
