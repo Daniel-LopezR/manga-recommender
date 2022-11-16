@@ -8,7 +8,7 @@ import Image from "next/image";
 export default function Home() {
   const [mangaId, setMangaId] = useState(() => getRandomManga());
   const { data, isLoading } = trpc["get-manga-by-id"].useQuery({ id: mangaId });
-  const dataLoaded = !isLoading && data;
+  const dataLoaded = !isLoading && data !== undefined;
 
   const recommendMe = () => {
     setMangaId(() => getRandomManga(mangaId));
@@ -45,7 +45,7 @@ export default function Home() {
       </button>
       <div className="p-2" />
       <div className="flex-1 w-96 h-2/3 pl-4 pr-4 pb-4">
-        {dataLoaded && <MangaStand manga={data} />}
+        {dataLoaded && <MangaStand mangaFS={data} />}
         {!dataLoaded && (
           <div className="flex flex-col justify-center items-center h-full">
             <img className="" src="ball-triangle.svg" />
@@ -66,43 +66,52 @@ export default function Home() {
 
 type MangaFromServer = inferQueryResponse<"get-manga-by-id">;
 
-const MangaStand: React.FC<{ manga: MangaFromServer }> = (props) => {
+const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
+
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full">
-      <div className="text-2xl text-center p-2">
-        {props.manga.manga.alternative_titles.ja === ""
-          ? props.manga.manga.title
-          : props.manga.manga.title +
-            " - " +
-            props.manga.manga.alternative_titles.ja}
-      </div>
-      <div className="relative w-80 h-5/6">
-        {props.manga.manga.main_picture !== undefined ? (
-          <Image
-            className="shadow-md shadow-white rounded-lg"
-            fill
-            sizes="(max-height: 1200px) 50vw,
+    <div className="h-full">
+      {props.mangaFS.manga === null ? (
+        <div className="flex flex-col justify-center items-center w-full h-full">
+          <div>There was a problem loading the manga</div>
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center w-full h-full">
+          <div className="text-2xl text-center p-2">
+            {props.mangaFS.manga.title_ja === ""
+              ? props.mangaFS.manga.title
+              : props.mangaFS.manga.title +
+                " - " +
+                props.mangaFS.manga.title_ja}
+          </div>
+          <div className="relative w-80 h-5/6">
+            {props.mangaFS.manga.img_large !== undefined ? (
+              <Image
+                className="shadow-md shadow-white rounded-lg"
+                fill
+                sizes="(max-height: 1200px) 50vw,
               (max-height: 768px) 100vw,
               33vw"
-            src={props.manga.manga.main_picture.large}
-            alt={props.manga.manga.title + " manga cover"}
-          />
-        ) : (
-          <img
-            className="p-6 invert h-full w-full"
-            src={"question-mark.svg"}
-            alt={props.manga.manga.title + " doesn't have manga cover"}
-          />
-        )}
-      </div>
+                src={props.mangaFS.manga.img_large}
+                alt={props.mangaFS.manga.title + " manga cover"}
+              />
+            ) : (
+              <img
+                className="p-6 invert h-full w-full"
+                src={"question-mark.svg"}
+                alt={props.mangaFS.manga.title + " doesn't have manga cover"}
+              />
+            )}
+          </div>
 
-      <div className="p-2" />
-      <a
-        href={"/" + props.manga.manga.id}
-        className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
-      >
-        + Info
-      </a>
+          <div className="p-2" />
+          <a
+            href={"/" + props.mangaFS.manga.id}
+            className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
+          >
+            + Info
+          </a>
+        </div>
+      )}
     </div>
   );
 };

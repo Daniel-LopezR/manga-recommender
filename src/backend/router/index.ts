@@ -1,18 +1,13 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
+import { prisma } from "@/backend/utils/prisma";
 
 type Manga = {
   id: number;
   title: string;
-  main_picture: {
-    medium: string;
-    large: string;
-  };
-  alternative_titles: {
-    synonyms: [string[]];
-    en: string;
-    ja: string;
-  };
+  title_ja: string;
+  img_medium: string;
+  img_large: string;
 };
 
 type MangaInfo = {
@@ -53,7 +48,8 @@ type MangaInfo = {
   ];
 };
 
-const infoFields = "id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}";
+const infoFields =
+  "id,title,main_picture,alternative_titles,synopsis,status,genres,my_list_status,num_volumes,num_chapters,authors{first_name,last_name}";
 const standFields = "id,title,main_picture,alternative_titles";
 
 async function api<T>(id: number): Promise<T> {
@@ -66,15 +62,15 @@ async function api<T>(id: number): Promise<T> {
         "X-MAL-CLIENT-ID": `${process.env.MAL_CLIENT_ID}`,
       },
     }
-  ).then(async(response) => {
+  ).then(async (response) => {
     console.log(id);
     const data = await response.json();
-    if(response.ok){
+    if (response.ok) {
       return data;
-    }else if(data.error === "not_found") {
+    } else if (data.error === "not_found") {
       console.log("Id not found");
       return await api<Manga>(id + 1);
-    }else{
+    } else {
       throw new Error(response.statusText);
     }
   });
@@ -88,7 +84,7 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const manga = await api<Manga>(input.id);
+      const manga = await prisma.manga.findFirst({ where: { id: input.id } }); //api<Manga>(input.id)
       return {
         manga: manga,
       };
