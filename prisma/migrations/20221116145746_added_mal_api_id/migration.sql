@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Manga` ADD COLUMN `mal_api_id` INTEGER NOT NULL DEFAULT 0;

@@ -15,6 +15,7 @@ datasource db {
 
 model Manga {
   id            Int              @id @default(autoincrement())
+  mal_api_id    Int              @default(0)
   title         String
   title_ja      String
   img_medium    String
