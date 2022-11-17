@@ -1,6 +1,6 @@
 import { prisma } from "@/backend/utils/prisma";
 
-const MAX_MANGA_ID:number = await prisma.manga.count();
+const MAX_MANGA_ID:number = 4000;
 
 export const getRandomManga: (notThisOne?: number) => number = (
   notThisOne?: number
