@@ -3,5 +3,29 @@
 @tailwind utilities;
 
 body {
-    @apply text-white bg-gray-800;
+  @apply text-white bg-gray-800;
+}
+
+.aux:has(.base) {
+  background-color: #475569;
+}
+
+.aux:hover:has(.base){
+  background-color: #65a30d;
+}
+
+.aux:has(.included) {
+  background-color:  darkgreen;
+}
+
+.aux:hover:has(.included) {
+  background-color: red;
+}
+
+.aux:has(.excluded) {
+  background-color: #7f1d1d;
+}
+
+.aux:hover:has(.excluded) {
+  background-color: #64748b;
 }

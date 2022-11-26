@@ -89,6 +89,12 @@ export const appRouter = router({
         manga: manga,
       };
     }),
+  "get-all-genres": publicProcedure.query(async () => {
+    return await prisma.genre.findMany();
+  }),
+  "get-all-demographics": publicProcedure.query(async () => {
+    return await prisma.demographic.findMany();
+  }),
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;
