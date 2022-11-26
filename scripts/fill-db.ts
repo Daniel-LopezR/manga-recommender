@@ -126,6 +126,7 @@ const doBackFill = async () => {
       const mangaCreation = await prisma.manga.create({
         data: {
           title: mangaFound.title,
+          mal_api_id: mangaFound.id,
           title_ja: mangaFound.alternative_titles.ja,
           img_medium: mangaFound.main_picture.medium,
           img_large: mangaFound.main_picture.large,
