@@ -1,13 +1,10 @@
-import { prisma } from "@/backend/utils/prisma";
-
-const MAX_MANGA_ID:number = await prisma.manga.count();
-
-export const getRandomManga: (notThisOne?: number) => number = (
+export const getRandomManga: (
+  maxMangaId: number,
   notThisOne?: number
-) => {
-  const mangaId = Math.floor(Math.random() * MAX_MANGA_ID) + 1;
+) => number = (maxMangaId: number, notThisOne?: number) => {
+  const mangaId = Math.floor(Math.random() * maxMangaId) + 1;
 
   if (mangaId !== notThisOne) return mangaId;
 
-  return getRandomManga(mangaId);
+  return getRandomManga(maxMangaId, mangaId);
 };

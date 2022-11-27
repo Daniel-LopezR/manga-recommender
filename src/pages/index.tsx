@@ -2,19 +2,29 @@ import { getRandomManga } from "@/utils/getRandomManga";
 import { trpc } from "@/utils/trpc";
 import React, { useState } from "react";
 import MangaStand from "./components/MangaStand";
-import OptionsGenerator from "./components/OptionsGenerator"
+import OptionsGenerator from "./components/OptionsGenerator";
+import { prisma } from "@/backend/utils/prisma";
 
-export default function Home() {
-  const [mangaId, setMangaId] = useState(() => getRandomManga());
+// This function gets called at build time on server-side.
+// It won't be called on client-side, so you can even do
+// direct database queries.
+export async function getStaticProps() {
+  const mangaCount: number = await prisma.manga.count();
+  return {props: {mangaCount}};
+}
+
+export default function Home({ mangaCount }: {mangaCount: number}) {
+  const [mangaId, setMangaId] = useState(() => getRandomManga(mangaCount));
   const { data, isLoading } = trpc["get-manga-by-id"].useQuery({ id: mangaId });
   const genres = trpc["get-all-genres"].useQuery();
   const demographics = trpc["get-all-demographics"].useQuery();
   const dataLoaded = !isLoading && data !== undefined;
   const genreLoaded = !genres.isLoading && genres.data !== undefined;
-  const demogLoaded = !demographics.isLoading && demographics.data !== undefined;
+  const demogLoaded =
+    !demographics.isLoading && demographics.data !== undefined;
 
   const recommendMe = () => {
-    setMangaId(() => getRandomManga(mangaId));
+    setMangaId(() => getRandomManga(mangaCount, mangaId));
     // Actually recommend based on genres included or excluded
   };
 
@@ -27,8 +37,13 @@ export default function Home() {
           {genreLoaded && <OptionsGenerator dataFS={genres.data} />}
           {demogLoaded && <OptionsGenerator dataFS={demographics.data} />}
         </div>
-          <div className="p-2" />
-          <div onClick={recommendMe} className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer">Recommend me!</div>
+        <div className="p-2" />
+        <div
+          onClick={recommendMe}
+          className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer"
+        >
+          Recommend me!
+        </div>
       </div>
       <div className="p-1" />
       <div className="w-96 h-full p-4 flex flex-col justify-center items-center">
