@@ -1,4 +1,4 @@
-import { inferQueryResponse } from "../api/trpc/[trpc]";
+import { inferQueryResponse } from "../pages/api/trpc/[trpc]";
 
 import Image from "next/image";
 

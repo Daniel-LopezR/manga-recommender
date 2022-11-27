@@ -1,5 +1,5 @@
 import { MouseEventHandler } from "react";
-import { inferQueryResponse } from "../api/trpc/[trpc]";
+import { inferQueryResponse } from "../pages/api/trpc/[trpc]";
 
 type GenreFromServer = inferQueryResponse<"get-all-genres">;
 type DemoFromServer = inferQueryResponse<"get-all-demographics">;

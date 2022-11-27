@@ -1,8 +1,8 @@
 import { getRandomManga } from "@/utils/getRandomManga";
 import { trpc } from "@/utils/trpc";
 import React, { useState } from "react";
-import MangaStand from "./components/MangaStand";
-import OptionsGenerator from "./components/OptionsGenerator";
+import MangaStand from "../components/MangaStand";
+import OptionsGenerator from "../components/OptionsGenerator";
 import { prisma } from "@/backend/utils/prisma";
 
 // This function gets called at build time on server-side.
