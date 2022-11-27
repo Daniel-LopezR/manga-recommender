@@ -7,28 +7,26 @@ type MangaFromServer = inferQueryResponse<"get-manga-by-id">;
 const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
 
   return (
-    <div className="h-full">
+    <>
       {props.mangaFS.manga === null ? (
-        <div className="flex flex-col justify-center items-center w-full h-full">
+        <div className="flex flex-col justify-center items-center w-full">
           <div>There was a problem loading the manga</div>
         </div>
       ) : (
-        <div className="flex flex-col justify-center items-center w-full h-full">
-          <div className="text-2xl text-center p-2">
+        <div className="h-full flex flex-col items-center pb-9">
+          <div className="text-2xl text-center overflow-hidden text-ellipsis whitespace-nowrap p-2 w-72">
             {props.mangaFS.manga.title_ja === ""
               ? props.mangaFS.manga.title
               : props.mangaFS.manga.title +
                 " - " +
                 props.mangaFS.manga.title_ja}
           </div>
-          <div className="relative w-80 h-5/6">
+          <div className="relative w-5/6 flex justify-center max-h-96">
             {props.mangaFS.manga.img_large !== undefined ? (
               <Image
                 className="shadow-md shadow-white rounded-lg"
-                fill
-                sizes="(max-height: 1200px) 50vw,
-              (max-height: 768px) 100vw,
-              33vw"
+                width={260}
+                height={0}
                 src={props.mangaFS.manga.img_large}
                 alt={props.mangaFS.manga.title + " manga cover"}
               />
@@ -50,7 +48,7 @@ const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
           </a>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

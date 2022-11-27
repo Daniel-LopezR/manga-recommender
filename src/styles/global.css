@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+body, #__next {
   @apply text-white bg-gray-800;
+  height: 100vh;
 }
 
 .aux:has(.base) {
@@ -11,15 +12,15 @@ body {
 }
 
 .aux:hover:has(.base){
-  background-color: #65a30d;
+  background-color: #15803d;
 }
 
 .aux:has(.included) {
-  background-color:  darkgreen;
+  background-color:  #15803d;
 }
 
 .aux:hover:has(.included) {
-  background-color: red;
+  background-color: #7f1d1d;
 }
 
 .aux:has(.excluded) {
