@@ -1,4 +1,4 @@
-import { getRandomManga } from "@/utils/getRandomManga";
+import { getRandomMangaId } from "@/utils/getRandomMangaId";
 import { transformOptions } from "@/utils/transformOptions";
 import { trpc } from "@/utils/trpc";
 import React, { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ export async function getStaticProps() {
 }
 
 export default function Home({ mangaCount }: { mangaCount: number }) {
-  const [mangaId, setMangaId] = useState(() => getRandomManga(mangaCount));
+  const [mangaId, setMangaId] = useState(() => getRandomMangaId(mangaCount));
   const [genreOpt, setGenreOpt] = useState<options | undefined>(() => undefined);
   const [demographicsOpt, setDemographicsOpt] = useState<options | undefined>(() => undefined);
   const { data, isLoading } = 
@@ -46,7 +46,7 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
       transformOptions(document.getElementById("menuOptions-Demographics")!)
     );
     if (!genreOpt && !demographicsOpt) {
-      setMangaId(() => getRandomManga(mangaCount, mangaId));
+      setMangaId(() => getRandomMangaId(mangaCount, mangaId));
     }
   };
   // TODO: Rethink how i get manga by id/options and state of mangaId to better design the logic and stop getting back to back the same manga

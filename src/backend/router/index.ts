@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import { prisma } from "@/backend/utils/prisma";
-import { getRandomManga } from "@/utils/getRandomManga";
+import { getRandomMangaId } from "@/utils/getRandomMangaId";
 
 type Manga = {
   id: number;
@@ -137,7 +137,7 @@ export const appRouter = router({
           ],
         },
       });
-      return { manga: (mangas.length) ? mangas[getRandomManga(mangas.length, input.lastMangaId) - 1] : null};
+      return { manga: (mangas.length) ? mangas[getRandomMangaId(mangas.length, input.lastMangaId) - 1] : null};
     }),
   "get-all-genres": publicProcedure.query(async () => {
     return await prisma.genre.findMany({ orderBy: { id: "asc" } });

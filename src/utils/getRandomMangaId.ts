@@ -1,4 +1,4 @@
-export const getRandomManga: (
+export const getRandomMangaId: (
   maxMangaId: number,
   notThisOne?: number
 ) => number = (maxMangaId: number, notThisOne?: number) => {
@@ -6,5 +6,5 @@ export const getRandomManga: (
 
   if (mangaId !== notThisOne) return mangaId;
 
-  return getRandomManga(maxMangaId, mangaId);
+  return getRandomMangaId(maxMangaId, mangaId);
 };

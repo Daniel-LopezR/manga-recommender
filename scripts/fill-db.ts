@@ -87,7 +87,7 @@ const doBackFill = async () => {
 
   //Manga
   for (let id = 1; id <= MAX_APROXIMATE_ID; id++) {
-    console.log("ID -> ?", id);
+    console.log("ID -> ", id);
     const mangaFound = await malApiCall<MangaFound>(id);
     if (
       mangaFound.title !== "none" &&
@@ -145,7 +145,7 @@ const doBackFill = async () => {
         console.log("Manga_Genres_Creation?", mangaGenresCreation);
       }
     } else {
-      console.log(mangaFound, " is not valid");
+      console.log(mangaFound, "is not valid");
     }
   }
 };
