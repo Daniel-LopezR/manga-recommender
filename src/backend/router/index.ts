@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import { prisma } from "@/backend/utils/prisma";
+import { getRandomManga } from "@/utils/getRandomManga";
 
 type Manga = {
   id: number;
@@ -84,16 +85,65 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const manga = await prisma.manga.findFirst({ where: { id: input.id } }); //api<Manga>(input.id)
+      const manga = await prisma.manga.findFirst({ where: { id: input.id } });
       return {
         manga: manga,
       };
     }),
+  "get-manga-by-options": publicProcedure
+    .input(
+      z.object({
+        genres: z
+          .object({
+            optionsIncluded: z.array(z.number()).optional(),
+            optionsExcluded: z.array(z.number()).optional(),
+          })
+          .optional(),
+        demographics: z
+          .object({
+            optionsIncluded: z.array(z.number()).optional(),
+            optionsExcluded: z.array(z.number()).optional(),
+          })
+          .optional(),
+        lastMangaId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const noneGenres = (input.genres?.optionsExcluded) ? {
+        genreId: {
+          in: input.genres?.optionsExcluded,
+        },
+      } : undefined;
+      
+      const mangas = await prisma.manga.findMany({
+        where: {
+          AND: [
+            {
+              demographicId: {
+                in: input.demographics?.optionsIncluded,
+                notIn: input.demographics?.optionsExcluded,
+              },
+            },
+            {
+              genres: {
+                some: {
+                  genreId: {
+                    in: input.genres?.optionsIncluded,
+                  },
+                },
+                none: noneGenres
+              },
+            },
+          ],
+        },
+      });
+      return { manga: (mangas.length) ? mangas[getRandomManga(mangas.length, input.lastMangaId) - 1] : null};
+    }),
   "get-all-genres": publicProcedure.query(async () => {
-    return await prisma.genre.findMany();
+    return await prisma.genre.findMany({ orderBy: { id: "asc" } });
   }),
   "get-all-demographics": publicProcedure.query(async () => {
-    return await prisma.demographic.findMany();
+    return await prisma.demographic.findMany({ orderBy: { id: "asc" } });
   }),
 });
 // export type definition of API

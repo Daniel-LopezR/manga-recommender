@@ -1,21 +1,36 @@
 import { getRandomManga } from "@/utils/getRandomManga";
+import { transformOptions } from "@/utils/transformOptions";
 import { trpc } from "@/utils/trpc";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MangaStand from "../components/MangaStand";
 import OptionsGenerator from "../components/OptionsGenerator";
 import { prisma } from "@/backend/utils/prisma";
+
+type options = {
+  optionsIncluded: number[] | undefined;
+  optionsExcluded: number[] | undefined;
+};
 
 // This function gets called at build time on server-side.
 // It won't be called on client-side, so you can even do
 // direct database queries.
 export async function getStaticProps() {
   const mangaCount: number = await prisma.manga.count();
-  return {props: {mangaCount}};
+  return { props: { mangaCount } };
 }
 
-export default function Home({ mangaCount }: {mangaCount: number}) {
+export default function Home({ mangaCount }: { mangaCount: number }) {
   const [mangaId, setMangaId] = useState(() => getRandomManga(mangaCount));
-  const { data, isLoading } = trpc["get-manga-by-id"].useQuery({ id: mangaId });
+  const [genreOpt, setGenreOpt] = useState<options | undefined>(() => undefined);
+  const [demographicsOpt, setDemographicsOpt] = useState<options | undefined>(() => undefined);
+  const { data, isLoading } = 
+    genreOpt || demographicsOpt
+      ? trpc["get-manga-by-options"].useQuery({
+          genres: genreOpt,
+          demographics: demographicsOpt,
+          lastMangaId: mangaId
+        })
+      : trpc["get-manga-by-id"].useQuery({ id: mangaId });
   const genres = trpc["get-all-genres"].useQuery();
   const demographics = trpc["get-all-demographics"].useQuery();
   const dataLoaded = !isLoading && data !== undefined;
@@ -24,9 +39,22 @@ export default function Home({ mangaCount }: {mangaCount: number}) {
     !demographics.isLoading && demographics.data !== undefined;
 
   const recommendMe = () => {
-    setMangaId(() => getRandomManga(mangaCount, mangaId));
-    // Actually recommend based on genres included or excluded
+    setGenreOpt(
+      transformOptions(document.getElementById("menuOptions-Genres")!)
+    );
+    setDemographicsOpt(
+      transformOptions(document.getElementById("menuOptions-Demographics")!)
+    );
+    if (!genreOpt && !demographicsOpt) {
+      setMangaId(() => getRandomManga(mangaCount, mangaId));
+    }
   };
+  // TODO: Rethink how i get manga by id/options and state of mangaId to better design the logic and stop getting back to back the same manga
+  if(dataLoaded && data.manga && ( genreOpt || demographicsOpt)){
+    setMangaId(data.manga.id);
+    setGenreOpt(undefined);
+    setDemographicsOpt(undefined);
+  }
 
   return (
     <div className="w-screen flex flex-col items-center overflow-x-hidden">
@@ -38,12 +66,12 @@ export default function Home({ mangaCount }: {mangaCount: number}) {
           {demogLoaded && <OptionsGenerator dataFS={demographics.data} />}
         </div>
         <div className="p-2" />
-        <div
+        <button
           onClick={recommendMe}
           className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer"
         >
           Recommend me!
-        </div>
+        </button>
       </div>
       <div className="p-1" />
       <div className="w-96 h-full p-4 flex flex-col justify-center items-center">
