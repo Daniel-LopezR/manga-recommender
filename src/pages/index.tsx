@@ -1,12 +1,12 @@
-import { getRandomMangaId } from "@/utils/getRandomMangaId";
-import { transformOptions } from "@/utils/transformOptions";
-import { trpc } from "@/utils/trpc";
-import React, { useEffect, useState } from "react";
 import MangaStand from "../components/MangaStand";
 import OptionsGenerator from "../components/OptionsGenerator";
+import React, { useState } from "react";
 import { prisma } from "@/backend/utils/prisma";
+import { trpc } from "@/utils/trpc";
+import { getRandomMangaId } from "@/utils/getRandomMangaId";
+import { transformOptions } from "@/utils/transformOptions";
 
-type options = {
+type Options = {
   optionsIncluded: number[] | undefined;
   optionsExcluded: number[] | undefined;
 };
@@ -21,8 +21,8 @@ export async function getStaticProps() {
 
 export default function Home({ mangaCount }: { mangaCount: number }) {
   const [mangaId, setMangaId] = useState(() => getRandomMangaId(mangaCount));
-  const [genreOpt, setGenreOpt] = useState<options | undefined>(() => undefined);
-  const [demographicsOpt, setDemographicsOpt] = useState<options | undefined>(() => undefined);
+  const [genreOpt, setGenreOpt] = useState<Options | undefined>(() => undefined);
+  const [demographicsOpt, setDemographicsOpt] = useState<Options | undefined>(() => undefined);
   const { data, isLoading } = 
     genreOpt || demographicsOpt
       ? trpc["get-manga-by-options"].useQuery({
@@ -57,7 +57,7 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
   }
 
   return (
-    <div className="w-screen flex flex-col items-center overflow-x-hidden">
+    <div className="w-screen h-full flex flex-col items-center overflow-x-hidden">
       <div className="text-4xl text-center p-4">Manga Recommender</div>
       <div className="p-2" />
       <div className="w-screen flex flex-col justify-center items-center">
@@ -78,7 +78,7 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
         {dataLoaded && <MangaStand mangaFS={data} />}
         {!dataLoaded && (
           <div className="flex flex-col justify-center items-center h-full">
-            <img className="" src="ball-triangle.svg" />
+            <img className="" src="/ball-triangle.svg" />
           </div>
         )}
       </div>

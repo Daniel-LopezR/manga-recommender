@@ -1,6 +1,6 @@
-import { inferQueryResponse } from "../pages/api/trpc/[trpc]";
-
+import Link from "next/link";
 import Image from "next/image";
+import { inferQueryResponse } from "../pages/api/trpc/[trpc]";
 
 type MangaFromServer = inferQueryResponse<"get-manga-by-id">;
 
@@ -33,19 +33,19 @@ const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
             ) : (
               <img
                 className="p-6 invert h-full w-full"
-                src={"question-mark.svg"}
+                src="/question-mark.svg"
                 alt={props.mangaFS.manga.title + " doesn't have manga cover"}
               />
             )}
           </div>
 
           <div className="p-2" />
-          <a
-            href={"/" + props.mangaFS.manga.id}
+          <Link
+            href={`/${encodeURIComponent(props.mangaFS.manga.mal_api_id)}/info`}
             className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
           >
             + Info
-          </a>
+          </Link>
         </div>
       )}
     </>
