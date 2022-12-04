@@ -25,7 +25,7 @@ const OptionsGenerator: React.FC<{
   const title = (isCorrectType(props.dataFS)) ? "Genres" : "Demographics";
 
   return (
-    <div className="flex flex-col w-2/4">
+    <div className="flex flex-col">
       <div className="text-center p-2">
         {title}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="pl-2 w-6 h-6 inline-block">

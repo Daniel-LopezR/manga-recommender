@@ -5,6 +5,7 @@ import { prisma } from "@/backend/utils/prisma";
 import { trpc } from "@/utils/trpc";
 import { getRandomMangaId } from "@/utils/getRandomMangaId";
 import { transformOptions } from "@/utils/transformOptions";
+import Head from "next/head";
 
 type Options = {
   optionsIncluded: number[] | undefined;
@@ -21,14 +22,18 @@ export async function getStaticProps() {
 
 export default function Home({ mangaCount }: { mangaCount: number }) {
   const [mangaId, setMangaId] = useState(() => getRandomMangaId(mangaCount));
-  const [genreOpt, setGenreOpt] = useState<Options | undefined>(() => undefined);
-  const [demographicsOpt, setDemographicsOpt] = useState<Options | undefined>(() => undefined);
-  const { data, isLoading } = 
+  const [genreOpt, setGenreOpt] = useState<Options | undefined>(
+    () => undefined
+  );
+  const [demographicsOpt, setDemographicsOpt] = useState<Options | undefined>(
+    () => undefined
+  );
+  const { data, isLoading } =
     genreOpt || demographicsOpt
       ? trpc["get-manga-by-options"].useQuery({
           genres: genreOpt,
           demographics: demographicsOpt,
-          lastMangaId: mangaId
+          lastMangaId: mangaId,
         })
       : trpc["get-manga-by-id"].useQuery({ id: mangaId });
   const genres = trpc["get-all-genres"].useQuery();
@@ -50,46 +55,42 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
     }
   };
   // TODO: Rethink how i get manga by id/options and state of mangaId to better design the logic and stop getting back to back the same manga
-  if(dataLoaded && data.manga && ( genreOpt || demographicsOpt)){
+  if (dataLoaded && data.manga && (genreOpt || demographicsOpt)) {
     setMangaId(data.manga.id);
     setGenreOpt(undefined);
     setDemographicsOpt(undefined);
   }
 
   return (
-    <div className="w-screen h-full flex flex-col items-center overflow-x-hidden">
-      <div className="text-4xl text-center p-4">Manga Recommender</div>
-      <div className="p-2" />
-      <div className="w-screen flex flex-col justify-center items-center">
-        <div className="flex flex-col justify-center items-center gap-3 w-2/4">
-          {genreLoaded && <OptionsGenerator dataFS={genres.data} />}
-          {demogLoaded && <OptionsGenerator dataFS={demographics.data} />}
-        </div>
-        <div className="p-2" />
-        <button
-          onClick={recommendMe}
-          className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer"
-        >
-          Recommend me!
-        </button>
-      </div>
-      <div className="p-1" />
-      <div className="w-96 h-full p-4 flex flex-col justify-center items-center">
-        {dataLoaded && <MangaStand mangaFS={data} />}
-        {!dataLoaded && (
-          <div className="flex flex-col justify-center items-center h-full">
-            <img className="" src="/ball-triangle.svg" />
+    <>
+      <Head>
+        <title>Manga Recommender</title>
+        <meta property="og:title" content="Manga Recommender" key="title" />
+      </Head>
+      <div className="flex-grow flex flex-col justify-center items-center overflow-x-hidden p-2">
+        <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center gap-3 w-2/4">
+            {genreLoaded && <OptionsGenerator dataFS={genres.data} />}
+            {demogLoaded && <OptionsGenerator dataFS={demographics.data} />}
           </div>
-        )}
+          <div className="p-2" />
+          <button
+            onClick={recommendMe}
+            className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer"
+          >
+            Recommend me!
+          </button>
+        </div>
+        <div className="p-1" />
+        <div className="w-96 h-full p-4 flex flex-col justify-center items-center">
+          {dataLoaded && <MangaStand mangaFS={data} />}
+          {!dataLoaded && (
+            <div className="flex flex-col justify-center items-center h-full">
+              <img className="" src="/ball-triangle.svg" />
+            </div>
+          )}
+        </div>
       </div>
-      <div className="text-1xl text-center p-2 fixed bottom-0 bg-gray-900 w-screen">
-        <a
-          href="https://github.com/Daniel-LopezR/manga-recommender"
-          target="_blank"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
+    </>
   );
 }

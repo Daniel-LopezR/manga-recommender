@@ -1,9 +1,9 @@
+import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { MouseEventHandler } from "react";
 import { trpc } from "@/utils/trpc";
 import { prisma } from "@/backend/utils/prisma";
-
 type GenreDemo = {
   genres: {
     genre: {
@@ -79,77 +79,88 @@ function InfoPage(props: {
   };
 
   return (
-    <div className="w-screen h-full flex flex-col items-center justify-center overflow-x-hidden">
-      <div className="text-4xl text-center p-4">Manga Recommender</div>
-
-      {dataLoaded && (
-        <>
-          <div className="p-6" />
-          <div className="grid grid-cols-4 gap-4 w-4/6">
-            <div className="col-span-4 text-3xl text-center">{data.title}</div>
-            <div className="row-span-6 flex items-center">
-              <Image
-                className="shadow-md shadow-white rounded-lg h-auto"
-                width={360}
-                height={0}
-                src={data.main_picture.large}
-                alt={data.title + " manga cover"}
-              />
-            </div>
-            <div className="col-span-3 p-4 pl-11 text-lg">{`Japanese Title: ${data.alternative_titles.ja}`}</div>
-            <div className="col-span-2 p-4 pl-11 text-lg capitalize">
-              {`Authors: ${data.authors.map((author) => {
-                return `${author.node.first_name} ${author.node.last_name} (${author.role})`;
-              })}`}
-            </div>
-            <div className="p-4 pl-11 text-lg">{`Status: ${data.status}`}</div>
-            <div className="col-span-2 p-4 pl-11 text-lg">
-              {`Genres: ${
-                props.genres
-                  ? props.genres.map((genre) => {
-                      return genre.name;
+    <>
+      <Head>
+        <title>Info - Manga Recommender</title>
+        <meta property="og:title" content="Info - Manga Recommender" key="title" />
+      </Head>
+      <div className="h-full w-screen flex flex-col items-center justify-center overflow-x-hidden">
+        {dataLoaded && (
+          <>
+            <div className="p-6" />
+            <div className="grid grid-cols-4 gap-4 w-4/6">
+              <div className="col-span-4 text-3xl text-center">
+                {data.title}
+              </div>
+              <div className="row-span-6 flex items-center">
+                <Image
+                  className="shadow-md shadow-white rounded-lg h-auto"
+                  width={360}
+                  height={0}
+                  src={data.main_picture.large}
+                  alt={data.title + " manga cover"}
+                />
+              </div>
+              <div className="col-span-3 p-4 pl-11 text-lg">{`Japanese Title: ${data.alternative_titles.ja}`}</div>
+              <div className="col-span-2 p-4 pl-11 text-lg capitalize">
+                {`Authors: ${data.authors.map((author) => {
+                  return `${author.node.first_name} ${author.node.last_name} (${author.role})`;
+                })}`}
+              </div>
+              <div className="p-4 pl-11 text-lg">{`Status: ${data.status}`}</div>
+              <div className="col-span-2 p-4 pl-11 text-lg">
+                {`Genres: ${
+                  props.genres
+                    ? props.genres.map((genre) => {
+                        return genre.name;
+                      })
+                    : "None"
+                }`}
+              </div>
+              <div className="p-4 pl-11 text-lg">{`Demographic: ${props.demographic}`}</div>
+              <div className="p-4 pl-11 text-lg">{`Serialization: ${
+                data.serialization.length
+                  ? data.serialization.map((serialization) => {
+                      return `${serialization.node.name}`;
                     })
                   : "None"
-              }`}
-            </div>
-            <div className="p-4 pl-11 text-lg">{`Demographic: ${props.demographic}`}</div>
-            <div className="p-4 pl-11 text-lg">{`Serialization: ${(data.serialization.length) ? data.serialization.map((serialization) => {
-                return `${serialization.node.name}`;
-              }) : "None"}`}</div>
-            <div className="p-4 pl-11 text-lg">{`Rank in MAL: ${data.rank}`}</div>
-            <div className="p-4 pl-11 text-lg">{`Mean: ${data.mean}`}</div>
-            <div
-              onClick={showSynopsis}
-              className="col-span-3 p-4 pl-11 text-lg cursor-pointer relative "
-            >
-              <div className="h-40 overflow-y-scroll">
-                Synopsis:{" "}
-                <span className="blur-sm transition">{data.synopsis}</span>
+              }`}</div>
+              <div className="p-4 pl-11 text-lg">{`Rank in MAL: ${data.rank}`}</div>
+              <div className="p-4 pl-11 text-lg">{`Mean: ${data.mean}`}</div>
+              <div
+                onClick={showSynopsis}
+                className="col-span-3 p-4 pl-11 text-lg cursor-pointer relative "
+              >
+                <div>
+                  Synopsis:{" "}
+                  <span className="blur-sm transition">{data.synopsis}</span>
+                </div>
+                <img
+                  className="absolute top-1/2 left-1/2 w-10 invert"
+                  src="/blind.svg"
+                  alt="click_to_blur_out"
+                />
               </div>
-              <img
-                className="absolute top-1/2 left-1/2 w-10 invert"
-                src="/blind.svg"
-                alt="click_to_blur_out"
-              />
             </div>
-          </div>
-        </>
-      )}
-      {!dataLoaded && (
-        <>
-          <img className="p-8" src="/ball-triangle.svg" />
-          {/* <div className="text-3xl p-6">
+          </>
+        )}
+        {!dataLoaded && (
+          <>
+            <img className="p-8" src="/ball-triangle.svg" />
+            {/* <div className="text-3xl p-6">
             There was a prblem with the server. Please try again later!
           </div> */}
-        </>
-      )}
-      <Link
-        href={"/"}
-        className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
-      >
-        Home
-      </Link>
-    </div>
+          </>
+        )}
+        <div className="p-6" />
+        <Link
+          href={"/"}
+          className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
+        >
+          Home
+        </Link>
+      </div>
+    </>
   );
 }
 
