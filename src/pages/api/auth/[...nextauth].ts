@@ -30,7 +30,7 @@ export default NextAuth({
                 code: context.params.code,
                 code_verifier: pkceCode,
                 redirect_uri:
-                  "http://localhost:3000/api/auth/callback/myanimelist",
+                  `${process.env.HOME_URL}api/auth/callback/myanimelist`,
                 grant_type: "authorization_code",
               },
               {
