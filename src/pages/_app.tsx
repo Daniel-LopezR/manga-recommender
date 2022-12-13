@@ -1,15 +1,20 @@
 import "tailwindcss/tailwind.css";
 import "../styles/global.css";
+import Layout from "@/components/Layout";
 import type { AppProps, AppType } from "next/app";
 import { trpc } from "../utils/trpc";
-import Layout from "@/components/Layout";
+import { SessionProvider } from "next-auth/react";
 
-const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
+const MyApp: AppType = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) => {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <SessionProvider session={session}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </SessionProvider>
   );
 };
-
 export default trpc.withTRPC(MyApp);

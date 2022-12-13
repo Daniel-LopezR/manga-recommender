@@ -82,7 +82,11 @@ function InfoPage(props: {
     <>
       <Head>
         <title>Info - Manga Recommender</title>
-        <meta property="og:title" content="Info - Manga Recommender" key="title" />
+        <meta
+          property="og:title"
+          content="Info - Manga Recommender"
+          key="title"
+        />
       </Head>
       <div className="h-full w-screen flex flex-col items-center justify-center overflow-x-hidden">
         {dataLoaded && (
@@ -103,9 +107,14 @@ function InfoPage(props: {
               </div>
               <div className="col-span-3 p-4 pl-11 text-lg">{`Japanese Title: ${data.alternative_titles.ja}`}</div>
               <div className="col-span-2 p-4 pl-11 text-lg capitalize">
-                {`Authors: ${data.authors.map((author) => {
-                  return `${author.node.first_name} ${author.node.last_name} (${author.role})`;
-                })}`}
+                {`Authors: ${data.authors.map(
+                  (author: {
+                    node: { first_name: string; last_name: string };
+                    role: string;
+                  }) => {
+                    return `${author.node.first_name} ${author.node.last_name} (${author.role})`;
+                  }
+                )}`}
               </div>
               <div className="p-4 pl-11 text-lg">{`Status: ${data.status}`}</div>
               <div className="col-span-2 p-4 pl-11 text-lg">
@@ -120,9 +129,11 @@ function InfoPage(props: {
               <div className="p-4 pl-11 text-lg">{`Demographic: ${props.demographic}`}</div>
               <div className="p-4 pl-11 text-lg">{`Serialization: ${
                 data.serialization.length
-                  ? data.serialization.map((serialization) => {
-                      return `${serialization.node.name}`;
-                    })
+                  ? data.serialization.map(
+                      (serialization: { node: { name: string } }) => {
+                        return `${serialization.node.name}`;
+                      }
+                    )
                   : "None"
               }`}</div>
               <div className="p-4 pl-11 text-lg">{`Rank in MAL: ${data.rank}`}</div>
@@ -144,14 +155,7 @@ function InfoPage(props: {
             </div>
           </>
         )}
-        {!dataLoaded && (
-          <>
-            <img className="p-8" src="/ball-triangle.svg" />
-            {/* <div className="text-3xl p-6">
-            There was a prblem with the server. Please try again later!
-          </div> */}
-          </>
-        )}
+        {!dataLoaded && <img className="p-8" src="/ball-triangle.svg" />}
         <div className="p-6" />
         <Link
           href={"/"}

@@ -1,6 +1,6 @@
 import { httpBatchLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
-import type { AppRouter } from '@/backend/router/index';
+import type { MangaRouter } from '@/backend/router/manga';
 function getBaseUrl() {
   if (typeof window !== 'undefined')
     // browser should use relative path
@@ -14,7 +14,7 @@ function getBaseUrl() {
   // assume localhost
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
-export const trpc = createTRPCNext<AppRouter>({
+export const trpc = createTRPCNext<MangaRouter>({
   config({ ctx }) {
     return {
       links: [

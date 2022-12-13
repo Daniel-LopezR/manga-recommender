@@ -40,7 +40,7 @@ type MangaInfo = {
 const infoFields =
   "title,alternative_titles,synopsis,mean,rank,status,authors{first_name,last_name},serialization{name}";
 
-async function callApi<T>(id: number, fields: string): Promise<T> {
+async function malMangaApiCall<T>(id: number, fields: string): Promise<T> {
   return fetch(`https://api.myanimelist.net/v2/manga/${id}?fields=${fields}`, {
     method: "GET",
     headers: {
@@ -58,7 +58,7 @@ async function callApi<T>(id: number, fields: string): Promise<T> {
   });
 }
 
-export const appRouter = router({
+export const mangaRouter = router({
   "get-manga-by-id": publicProcedure
     .input(
       z.object({
@@ -135,8 +135,8 @@ export const appRouter = router({
   "get-manga-info": publicProcedure
     .input(z.object({ mal_api_id: z.number(),}))
     .query(async ({input}) => {
-      return await callApi<MangaInfo>(input.mal_api_id, infoFields);
+      return await malMangaApiCall<MangaInfo>(input.mal_api_id, infoFields);
   })
 });
 // export type definition of API
-export type AppRouter = typeof appRouter;
+export type MangaRouter = typeof mangaRouter;

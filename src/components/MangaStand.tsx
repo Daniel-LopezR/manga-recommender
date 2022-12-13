@@ -10,10 +10,10 @@ const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
     <>
       {props.mangaFS.manga === null ? (
         <div className="flex flex-col justify-center items-center w-full">
-          <div>There was a problem loading the manga</div>
+          <div className="text-center">There are no manga that satisfies the requested options</div>
         </div>
       ) : (
-        <div className="h-full flex flex-col items-center justify-center pb-9">
+        <div className="h-full flex flex-col items-center justify-center">
           <div className="text-2xl text-center overflow-hidden text-ellipsis whitespace-nowrap p-2 w-72">
             {props.mangaFS.manga.title_ja === ""
               ? props.mangaFS.manga.title
