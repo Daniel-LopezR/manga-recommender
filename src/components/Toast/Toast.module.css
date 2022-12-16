@@ -1,14 +1,13 @@
-.toast-animation {
+.toast-animation-in {
   transition: transform 0.6s ease-in;
   animation: toast-in 0.7s;
 }
 
 @keyframes toast-in {
-	from {
-		transform: translateX(100%);
-		
-	}
-	to {
-		transform: translateX(0);
-	}
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
