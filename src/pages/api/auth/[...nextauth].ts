@@ -53,7 +53,6 @@ export default NextAuth({
                 return {};
               }
             );
-          console.log(tokens);
 
           return {
             tokens,
@@ -61,13 +60,33 @@ export default NextAuth({
         },
       },
       userinfo: "https://api.myanimelist.net/v2/users/@me",
-      profile(profile) {
+      profile(profile, token) {
+        
         return {
           id: profile.id,
-          name: profile.name,
+          name: profile.name
         };
       },
     },
   ],
+  callbacks: {
+    async jwt({ token, account, profile }) {
+      // Persist the OAuth access_token to the token right after signin
+      if (account) {
+        token.access_token = account.access_token
+      }
+      return token
+    },
+    session({ session, token }) {
+      // Return a cookie value as part of the session
+      // This is read when `req.query.nextauth.includes("session") && req.method === "GET"`
+      if(session.user) session.user.token = token.access_token
+      return session
+    },
+  },
+  pages:{
+    error: '/',
+    signIn: '/'
+  },
   debug: false,
 });

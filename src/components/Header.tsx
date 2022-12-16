@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import React from "react";
 
 function Header() {
   const { data: session } = useSession();
-
-  console.log(session);
 
   return (
     <div className="flex items-center justify-between pl-4 pr-3 md:pr-8 xl:pr-12 bg-gray-900">
@@ -23,7 +21,7 @@ function Header() {
         )}
         {!session && (
           <button
-            onClick={() => signIn('myanimelist')}
+            onClick={() => signIn("myanimelist")}
             className="px-4 py-1 border rounded-full hover:bg-blue-900 transition"
           >
             Login with MyAnimeList

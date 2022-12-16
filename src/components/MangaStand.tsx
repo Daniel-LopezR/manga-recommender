@@ -5,12 +5,13 @@ import { inferQueryResponse } from "../pages/api/trpc/[trpc]";
 type MangaFromServer = inferQueryResponse<"get-manga-by-id">;
 
 const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
-
   return (
     <>
       {props.mangaFS.manga === null ? (
         <div className="flex flex-col justify-center items-center w-full">
-          <div className="text-center">There are no manga that satisfies the requested options</div>
+          <div className="text-center">
+            There are no manga that satisfies the requested options
+          </div>
         </div>
       ) : (
         <div className="h-full flex flex-col items-center justify-center">
@@ -42,6 +43,9 @@ const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
           <div className="p-2" />
           <Link
             href={`/${encodeURIComponent(props.mangaFS.manga.mal_api_id)}/info`}
+            onClick={() => {
+              document.getElementById("toast")?.classList.add("hidden");
+            }}
             className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
           >
             + Info
