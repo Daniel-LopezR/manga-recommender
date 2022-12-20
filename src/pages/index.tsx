@@ -86,7 +86,7 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
           {dataLoaded && <MangaStand mangaFS={data} />}
           {!dataLoaded && (
             <div className="flex flex-col justify-center items-center h-full">
-              <img className="" src="/ball-triangle.svg" />
+              <img src="/ball-triangle.svg" />
             </div>
           )}
         </div>

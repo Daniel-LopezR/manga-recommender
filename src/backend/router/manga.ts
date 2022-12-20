@@ -2,6 +2,7 @@ import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import { prisma } from "@/backend/utils/prisma";
 import { getRandomMangaId } from "@/utils/getRandomMangaId";
+import axios from "axios";
 
 type MangaInfo = {
   id: number;
@@ -25,37 +26,80 @@ type MangaInfo = {
       };
       role: string;
     }
-  ],
-  rank: number,
-  mean: number,
+  ];
+  rank: number;
+  mean: number;
   serialization: [
     {
       node: {
-        name: string
-      }
+        name: string;
+      };
     }
   ];
+  my_list_status: {
+    status: string;
+    is_rereading: boolean;
+    num_volumes_read: number;
+    num_chapters_read: number;
+    score: number;
+    updated_at: Date;
+  };
 };
 
 const infoFields =
-  "title,alternative_titles,synopsis,mean,rank,status,authors{first_name,last_name},serialization{name}";
+  "title,alternative_titles,synopsis,mean,rank,status,authors{first_name,last_name},serialization{name},my_list_status";
 
-async function malMangaApiCall<T>(id: number, fields: string): Promise<T> {
-  return fetch(`https://api.myanimelist.net/v2/manga/${id}?fields=${fields}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-MAL-CLIENT-ID": `${process.env.MAL_CLIENT_ID}`,
-    },
-  }).then(async (response) => {
-    console.log(id);
-    const data = await response.json();
-    if (response.ok) {
-      return data;
-    } else {
-      throw new Error(response.statusText);
-    }
-  });
+export async function malMangaApiCall<T>(
+  method: string,
+  url: string,
+  access_token?: string,
+  body?: any
+): Promise<T> {
+  if (method === "GET") {
+    return axios
+      .get(url, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-MAL-CLIENT-ID": `${process.env.MAL_CLIENT_ID}`,
+          Authorization: access_token ? `Bearer ${access_token}` : "",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        return error;
+      });
+  } else if (method === "PATCH"){
+    const status = new URLSearchParams({ status: body.status });
+    return axios
+      .patch(url, status, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: access_token ? `Bearer ${access_token}` : "",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        return error;
+      });
+  } else{
+    return axios
+      .delete(url,{
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: access_token ? `Bearer ${access_token}` : "",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        return error;
+      });
+  }
 }
 
 export const mangaRouter = router({
@@ -133,10 +177,16 @@ export const mangaRouter = router({
     return await prisma.demographic.findMany({ orderBy: { id: "asc" } });
   }),
   "get-manga-info": publicProcedure
-    .input(z.object({ mal_api_id: z.number(),}))
-    .query(async ({input}) => {
-      return await malMangaApiCall<MangaInfo>(input.mal_api_id, infoFields);
-  })
+    .input(
+      z.object({ mal_api_id: z.number(), access_token: z.string().optional() })
+    )
+    .query(async ({ input }) => {
+      return await malMangaApiCall<MangaInfo>(
+        "GET",
+        `https://api.myanimelist.net/v2/manga/${input.mal_api_id}?fields=${infoFields}`,
+        input.access_token
+      );
+    }),
 });
 // export type definition of API
 export type MangaRouter = typeof mangaRouter;

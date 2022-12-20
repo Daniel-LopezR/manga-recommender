@@ -1,9 +1,11 @@
+import StatusButton from "@/components/StatusButton";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useState } from "react";
 import { trpc } from "@/utils/trpc";
 import { prisma } from "@/backend/utils/prisma";
+import { useSession } from "next-auth/react";
 type GenreDemo = {
   genres: {
     genre: {
@@ -65,9 +67,43 @@ function InfoPage(props: {
   demographic: Demographic;
   id: number;
 }) {
-  const { data, isLoading } = trpc["get-manga-info"].useQuery({
-    mal_api_id: props.id,
-  });
+  const [userStatus, setUserStatus] = useState("");
+  const { data: session } = useSession();
+  const { data, isLoading } = session?.user?.token
+    ? trpc["get-manga-info"].useQuery({
+        mal_api_id: props.id,
+        access_token: session.user.token,
+      })
+    : trpc["get-manga-info"].useQuery({
+        mal_api_id: props.id,
+      });
+  const statuses = [
+    {
+      id: "reading",
+      name: "Reading",
+      color: "green",
+    },
+    {
+      id: "completed",
+      name: "Completed",
+      color: "blue",
+    },
+    {
+      id: "on_hold",
+      name: "On hold",
+      color: "amber",
+    },
+    {
+      id: "dropped",
+      name: "Dropped",
+      color: "red",
+    },
+    {
+      id: "plan_to_read",
+      name: "Plan to read",
+      color: "gray",
+    },
+  ];
   const dataLoaded = !isLoading && data !== undefined;
 
   const showSynopsis: MouseEventHandler<HTMLDivElement> = (event) => {
@@ -76,6 +112,15 @@ function InfoPage(props: {
       .getElementsByTagName("span")[0]
       .classList.remove("blur-sm");
     event.currentTarget.children[1].classList.add("hidden");
+  };
+
+  const updateStatus = (statusClicked: string) => {
+    if (
+      (userStatus === "" && data?.my_list_status?.status !== statusClicked) ||
+      userStatus !== statusClicked
+    ) {
+      setUserStatus(statusClicked);
+    }
   };
 
   return (
@@ -91,12 +136,13 @@ function InfoPage(props: {
       <div className="h-full w-screen flex flex-col items-center justify-center overflow-x-hidden">
         {dataLoaded && (
           <>
-            <div className="p-6" />
+            {console.log(data)}
+            <div className="p-4" />
             <div className="grid grid-cols-4 gap-4 w-4/6">
               <div className="col-span-4 text-3xl text-center">
                 {data.title}
               </div>
-              <div className="row-span-6 flex items-center">
+              <div className="row-span-5 flex items-center">
                 <Image
                   className="shadow-md shadow-white rounded-lg h-auto"
                   width={360}
@@ -152,17 +198,56 @@ function InfoPage(props: {
                   alt="click_to_blur_out"
                 />
               </div>
+              {session && (
+                <>
+                  <div className="flex justify-center items-center">
+                    <StatusButton
+                      status={{ id: "delete", name: "Delete from your list", color: "rose" }}
+                      statusSelected={data.my_list_status?.status}
+                      mangaId={props.id}
+                      updateStatus={updateStatus}
+                      deleteButton={true}
+                    />
+                  </div>
+                  <div className="col-span-4 text-xl text-center">
+                    <img
+                      className="invert h-4 inline-block "
+                      src="/arrowDown.svg"
+                    />
+                    {data.my_list_status
+                      ? ` ${data.title} is currently on your list, you can change the status below `
+                      : ` ${data.title} is not on your list, select any status to add it in your list `}
+                    <img
+                      className="invert h-4 inline-block "
+                      src="/arrowDown.svg"
+                    />
+                  </div>
+                  <div className="col-span-4 flex flex-row justify-evenly">
+                    {statuses.map((status) => {
+                      return (
+                        <StatusButton
+                          status={status}
+                          statusSelected={data.my_list_status?.status}
+                          mangaId={props.id}
+                          updateStatus={updateStatus}
+                        />
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           </>
         )}
         {!dataLoaded && <img className="p-8" src="/ball-triangle.svg" />}
-        <div className="p-6" />
-        <Link
-          href={"/"}
-          className="border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
-        >
-          Home
-        </Link>
+        <div className="flex flex-col items-center justify-center h-full">
+          <Link
+            href={"/"}
+            className=" border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"
+          >
+            Home
+          </Link>
+        </div>
       </div>
     </>
   );
