@@ -88,5 +88,6 @@ export default NextAuth({
     error: '/',
     signIn: '/'
   },
+  secret: process.env.JWT_SECRET,
   debug: false,
 });
