@@ -81,27 +81,47 @@ function InfoPage(props: {
     {
       id: "reading",
       name: "Reading",
-      color: "green",
+      color: {
+        border: "border-green-500",
+        bg: "bg-green-500",
+        hoverBg: "hover:bg-green-500",
+      },
     },
     {
       id: "completed",
       name: "Completed",
-      color: "blue",
+      color: {
+        border: "border-blue-500",
+        bg: "bg-blue-500",
+        hoverBg: "hover:bg-blue-500",
+      },
     },
     {
       id: "on_hold",
       name: "On hold",
-      color: "amber",
+      color: {
+        border: "border-amber-500",
+        bg: "bg-amber-500",
+        hoverBg: "hover:bg-amber-500",
+      },
     },
     {
       id: "dropped",
       name: "Dropped",
-      color: "red",
+      color: {
+        border: "border-red-500",
+        bg: "bg-red-500",
+        hoverBg: "hover:bg-red-500",
+      },
     },
     {
       id: "plan_to_read",
       name: "Plan to read",
-      color: "gray",
+      color: {
+        border: "border-gray-500",
+        bg: "bg-gray-500",
+        hoverBg: "hover:bg-gray-500",
+      },
     },
   ];
   const dataLoaded = !isLoading && data !== undefined;
@@ -202,7 +222,15 @@ function InfoPage(props: {
                 <>
                   <div className="flex justify-center items-center">
                     <StatusButton
-                      status={{ id: "delete", name: "Delete from your list", color: "rose" }}
+                      status={{
+                        id: "delete",
+                        name: "Delete from your list",
+                        color: {
+                          border: "border-rose-500",
+                          bg: "bg-rose-500",
+                          hoverBg: "hover:bg-rose-500",
+                        },
+                      }}
                       statusSelected={data.my_list_status?.status}
                       mangaId={props.id}
                       updateStatus={updateStatus}

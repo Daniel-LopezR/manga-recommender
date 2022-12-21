@@ -5,7 +5,11 @@ import React, { MouseEventHandler, useState } from "react";
 type status = {
   id: string;
   name: string;
-  color: string;
+  color: {
+    border: string,
+    bg: string,
+    hoverBg: string,
+  };
 };
 
 function StatusButton({
@@ -22,6 +26,7 @@ function StatusButton({
   deleteButton?: boolean;
 }) {
   const { data: session } = useSession();
+
   const changeStatus = async () => {
     if (deleteButton) {
       axios
@@ -49,11 +54,11 @@ function StatusButton({
     <>
       <div
         className={`p-2 text-center border rounded-xl transition cursor-pointer ${
-          "border-" + status.color + "-500"
+          status.color.border
         } ${
           statusSelected === status.id
-            ? "bg-" + status.color + "-500"
-            : "hover:bg-" + status.color + "-500"
+            ? status.color.bg
+            : status.color.hoverBg
         } `}
         onClick={changeStatus}
       >
