@@ -73,6 +73,7 @@ function InfoPage(props: {
     ? trpc["get-manga-info"].useQuery({
         mal_api_id: props.id,
         access_token: session.user.token,
+        userStatus: userStatus
       })
     : trpc["get-manga-info"].useQuery({
         mal_api_id: props.id,
@@ -158,7 +159,7 @@ function InfoPage(props: {
           <>
             {console.log(data)}
             <div className="p-4" />
-            <div className="grid grid-cols-4 gap-4 w-4/6">
+            <div className="grid grid-cols-4 gap-2 w-4/6">
               <div className="col-span-4 text-3xl text-center">
                 {data.title}
               </div>
@@ -224,11 +225,11 @@ function InfoPage(props: {
                     <StatusButton
                       status={{
                         id: "delete",
-                        name: "Delete from your list",
+                        name: (data.my_list_status) ? "Delete from your list" : "Not on your list",
                         color: {
                           border: "border-rose-500",
-                          bg: "bg-rose-500",
-                          hoverBg: "hover:bg-rose-500",
+                          bg: "",
+                          hoverBg: (data.my_list_status) ?  "hover:bg-rose-500" : "bg-rose-500 disabled cursor-default",
                         },
                       }}
                       statusSelected={data.my_list_status?.status}
@@ -267,7 +268,7 @@ function InfoPage(props: {
             </div>
           </>
         )}
-        {!dataLoaded && <img className="p-8" src="/ball-triangle.svg" />}
+        {!dataLoaded && <div className="h-5/6 flex items-end justify-center"><img className="p-8" src="/ball-triangle.svg"/></div>}
         <div className="flex flex-col items-center justify-center h-full">
           <Link
             href={"/"}

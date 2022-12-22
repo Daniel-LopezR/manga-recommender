@@ -178,7 +178,7 @@ export const mangaRouter = router({
   }),
   "get-manga-info": publicProcedure
     .input(
-      z.object({ mal_api_id: z.number(), access_token: z.string().optional() })
+      z.object({ mal_api_id: z.number(), access_token: z.string().optional(), userStatus: z.string().optional() })
     )
     .query(async ({ input }) => {
       return await malMangaApiCall<MangaInfo>(
