@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import type { AppProps, AppType } from "next/app";
 import { trpc } from "../utils/trpc";
 import { SessionProvider } from "next-auth/react";
+import StatusToastProvider from "@/context/statusToastContext";
 
 const MyApp: AppType = ({
   Component,
@@ -11,9 +12,11 @@ const MyApp: AppType = ({
 }: AppProps) => {
   return (
     <SessionProvider session={session}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <StatusToastProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </StatusToastProvider>
     </SessionProvider>
   );
 };

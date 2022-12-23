@@ -61,6 +61,7 @@ function StatusButton({
             : status.color.hoverBg
         } `}
         onClick={changeStatus}
+        key={status.id}
       >
         {status.name}
       </div>
