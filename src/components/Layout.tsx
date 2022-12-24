@@ -20,19 +20,19 @@ export default function Layout({ children }: LayoutProps) {
   const callbackUrl = router.query.callbackUrl as string;
 
   if (callbackUrl !== undefined) {
-    console.log(callbackUrl);
     const redirectUrl = callbackUrl.includes("?")
       ? callbackUrl.substring(0, callbackUrl.indexOf("?"))
       : callbackUrl;
     router.push({
       pathname: redirectUrl,
-    })
-      addStatusToast(
-        toastType.error,
-        router.query.error === "Callback"
-          ? "There was a problem during the process of authentication with MyAnimeList"
-          : (router.query.error! as string)
-      );
+    });
+    addStatusToast(
+      toastType.error,
+      "login",
+      router.query.error === "Callback"
+        ? "There was a problem during the process of authentication with MyAnimeList"
+        : (router.query.error! as string)
+    );
   }
   return (
     <div className="h-full flex flex-col">

@@ -2,7 +2,7 @@ import StatusButton from "@/components/StatusButton";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { MouseEventHandler, useState } from "react";
+import { MouseEventHandler, useContext, useState } from "react";
 import { trpc } from "@/utils/trpc";
 import { prisma } from "@/backend/utils/prisma";
 import { useSession } from "next-auth/react";
@@ -73,7 +73,7 @@ function InfoPage(props: {
     ? trpc["get-manga-info"].useQuery({
         mal_api_id: props.id,
         access_token: session.user.token,
-        userStatus: userStatus
+        userStatus: userStatus,
       })
     : trpc["get-manga-info"].useQuery({
         mal_api_id: props.id,
@@ -157,7 +157,6 @@ function InfoPage(props: {
       <div className="h-full w-screen flex flex-col items-center justify-center overflow-x-hidden">
         {dataLoaded && (
           <>
-            {console.log(data)}
             <div className="p-4" />
             <div className="grid grid-cols-4 gap-2 w-4/6">
               <div className="col-span-4 text-3xl text-center">
@@ -225,11 +224,15 @@ function InfoPage(props: {
                     <StatusButton
                       status={{
                         id: "delete",
-                        name: (data.my_list_status) ? "Delete from your list" : "Not on your list",
+                        name: data.my_list_status
+                          ? "Delete from your list"
+                          : "Not on your list",
                         color: {
                           border: "border-rose-500",
                           bg: "",
-                          hoverBg: (data.my_list_status) ?  "hover:bg-rose-500" : "bg-rose-500 disabled cursor-default",
+                          hoverBg: data.my_list_status
+                            ? "hover:bg-rose-500"
+                            : "bg-rose-500 disabled cursor-default",
                         },
                       }}
                       statusSelected={data.my_list_status?.status}
@@ -268,8 +271,12 @@ function InfoPage(props: {
             </div>
           </>
         )}
-        {!dataLoaded && <div className="h-5/6 flex items-end justify-center"><img className="p-8" src="/ball-triangle.svg"/></div>}
-        <div className="flex flex-col items-center justify-center h-full">
+        {!dataLoaded && (
+          <div className="h-5/6 flex items-center justify-center">
+            <img className="p-8" src="/ball-triangle.svg" />
+          </div>
+        )}
+        <div className="flex flex-col items-center justify-center p-4">
           <Link
             href={"/"}
             className=" border rounded-xl bg-cyan-700 p-2 hover:bg-cyan-600 transition"

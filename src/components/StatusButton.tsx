@@ -1,14 +1,19 @@
+import {
+  StatusToastContext,
+  StatusToastContextType,
+} from "@/context/statusToastContext";
+import { toastType } from "@/components/Toast/Toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import React, { MouseEventHandler, useState } from "react";
+import React, { useContext } from "react";
 
 type status = {
   id: string;
   name: string;
   color: {
-    border: string,
-    bg: string,
-    hoverBg: string,
+    border: string;
+    bg: string;
+    hoverBg: string;
   };
 };
 
@@ -25,19 +30,27 @@ function StatusButton({
   updateStatus: (statusClicked: string) => void;
   deleteButton?: boolean;
 }) {
+  const { addStatusToast } = useContext(
+    StatusToastContext
+  ) as StatusToastContextType;
   const { data: session } = useSession();
 
   const changeStatus = async () => {
     if (deleteButton) {
       axios
-      .patch(`/api/userMangaList/`, {
-        id: mangaId,
-        access_token: session!.user!.token,
-        method: "DELETE"
-      })
-      .then(() => {
-        updateStatus("delete");
-      });
+        .patch(`/api/userMangaList/`, {
+          id: mangaId,
+          access_token: session!.user!.token,
+          method: "DELETE",
+        })
+        .then(() => {
+          updateStatus("delete");
+          addStatusToast(
+            toastType.success,
+            "status",
+            "Manga was sucessfully deleted from your list!"
+          );
+        });
     } else {
       axios
         .patch(`/api/userMangaList/`, {
@@ -47,18 +60,22 @@ function StatusButton({
         })
         .then((response) => {
           updateStatus(response.data.status);
+          addStatusToast(
+            toastType.success,
+            "status",
+            `Manga status sucessfully changed to ${status.name}!`
+          );
         });
     }
   };
+
   return (
     <>
       <div
         className={`p-2 text-center border rounded-xl transition cursor-pointer ${
           status.color.border
         } ${
-          statusSelected === status.id
-            ? status.color.bg
-            : status.color.hoverBg
+          statusSelected === status.id ? status.color.bg : status.color.hoverBg
         } `}
         onClick={changeStatus}
         key={status.id}
