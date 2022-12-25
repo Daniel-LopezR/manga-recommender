@@ -163,13 +163,19 @@ function InfoPage(props: {
                 {data.title}
               </div>
               <div className="row-span-5 flex items-center">
-                <Image
-                  className="shadow-md shadow-white rounded-lg h-auto"
-                  width={360}
-                  height={0}
-                  src={data.main_picture.large}
-                  alt={data.title + " manga cover"}
-                />
+                <Link
+                className="h-auto"
+                  href={`https://myanimelist.net/manga/${data.id}`}
+                  target={"_blank"}
+                >
+                  <Image
+                    className="shadow-md shadow-white rounded-lg"
+                    width={360}
+                    height={0}
+                    src={data.main_picture.large}
+                    alt={data.title + " manga cover"}
+                  />
+                </Link>
               </div>
               <div className="col-span-3 p-4 pl-11 text-lg">{`Japanese Title: ${data.alternative_titles.ja}`}</div>
               <div className="col-span-2 p-4 pl-11 text-lg capitalize">

@@ -1,9 +1,6 @@
-import { useRouter } from "next/router";
 import React, {
-  MouseEventHandler,
   useContext,
   useEffect,
-  useState,
 } from "react";
 import styles from "./Toast.module.css";
 import {
@@ -22,13 +19,13 @@ function Toast() {
   ) as StatusToastContextType;
 
   const deleteToast = (id: number) => {
+    // Try to add class so toast has a dissapear animation
     document.getElementById(id.toString())?.classList.add("hidden");
     removeStatusToast(Number(id));
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log(statusToasts);
       if (statusToasts && statusToasts.length !== 0) {
         deleteToast(statusToasts[0].id);
       }

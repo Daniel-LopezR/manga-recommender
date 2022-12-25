@@ -1,4 +1,5 @@
 import { useSession, signIn, signOut } from "next-auth/react";
+import Link from "next/link";
 import React from "react";
 
 function Header() {
@@ -11,6 +12,13 @@ function Header() {
         {session && (
           <div className="flex items-center gap-10">
             <div className="capitalize">{session.user?.name}</div>
+            <Link
+              className="transition text-shadow"
+              href={`https://myanimelist.net/mangalist/${session.user?.name}`}
+              target={"_blank"}
+            >
+              Go to your Manga List!
+            </Link>
             <button
               onClick={() => signOut()}
               className="px-4 py-1 border rounded-full hover:bg-blue-900 transition"

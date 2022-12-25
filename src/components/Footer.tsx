@@ -9,9 +9,9 @@ export default function Footer() {
         target="_blank"
       >
         <Image
-          className="h-auto invert inline-block"
+          className="invert inline-block"
           width={20}
-          height={0}
+          height={20}
           src={"/github.svg"}
           alt={"GitHub"}
         />

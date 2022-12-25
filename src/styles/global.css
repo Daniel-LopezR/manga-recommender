@@ -43,3 +43,6 @@ body, #__next {
 .aux:hover:has(.excluded) {
   background-color: #64748b;
 }
+.text-shadow:hover {
+  text-shadow: 0 2px 4px white;
+}
