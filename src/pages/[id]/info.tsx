@@ -229,7 +229,8 @@ function InfoPage(props: {
                   <div className="flex justify-center items-center">
                     <StatusButton
                       status={{
-                        id: "delete",
+                        id: data.my_list_status
+                        ? "delete" : "notOnList",
                         name: data.my_list_status
                           ? "Delete from your list"
                           : "Not on your list",

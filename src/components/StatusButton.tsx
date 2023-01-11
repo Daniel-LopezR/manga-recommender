@@ -37,20 +37,22 @@ function StatusButton({
 
   const changeStatus = async () => {
     if (deleteButton) {
-      axios
-        .patch(`/api/userMangaList/`, {
-          id: mangaId,
-          access_token: session!.user!.token,
-          method: "DELETE",
-        })
-        .then(() => {
-          updateStatus("delete");
-          addStatusToast(
-            toastType.success,
-            "status",
-            "Manga was sucessfully deleted from your list!"
-          );
-        });
+      if (status.id === "delete") {
+        axios
+          .patch(`/api/userMangaList/`, {
+            id: mangaId,
+            access_token: session!.user!.token,
+            method: "DELETE",
+          })
+          .then(() => {
+            updateStatus("delete");
+            addStatusToast(
+              toastType.success,
+              "status",
+              "Manga was sucessfully deleted from your list!"
+            );
+          });
+      }
     } else {
       axios
         .patch(`/api/userMangaList/`, {
