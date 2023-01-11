@@ -154,17 +154,17 @@ function InfoPage(props: {
           key="title"
         />
       </Head>
-      <div className="h-full w-screen flex flex-col items-center justify-center overflow-x-hidden">
-        {dataLoaded && (
+      <div className="h-full flex flex-col items-center justify-center overflow-x-hidden">
+        {dataLoaded ? (
           <>
             <div className="p-4" />
-            <div className="grid grid-cols-4 gap-2 w-4/6">
-              <div className="col-span-4 text-3xl text-center">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2 w-4/6">
+              <div className="md:col-span-4 text-3xl text-center pb-4">
                 {data.title}
               </div>
-              <div className="row-span-5 flex items-center">
+              <div className="md:col-span-2 md:row-span-5 xl:col-span-1 xl:row-span-5 flex flex-col items-center justify-center gap-5 cursor-pointer">
                 <Link
-                className="h-auto"
+                  className="h-auto"
                   href={`https://myanimelist.net/manga/${data.id}`}
                   target={"_blank"}
                 >
@@ -176,61 +176,12 @@ function InfoPage(props: {
                     alt={data.title + " manga cover"}
                   />
                 </Link>
-              </div>
-              <div className="col-span-3 p-4 pl-11 text-lg">{`Japanese Title: ${data.alternative_titles.ja}`}</div>
-              <div className="col-span-2 p-4 pl-11 text-lg capitalize">
-                {`Authors: ${data.authors.map(
-                  (author: {
-                    node: { first_name: string; last_name: string };
-                    role: string;
-                  }) => {
-                    return `${author.node.first_name} ${author.node.last_name} (${author.role})`;
-                  }
-                )}`}
-              </div>
-              <div className="p-4 pl-11 text-lg">{`Status: ${data.status}`}</div>
-              <div className="col-span-2 p-4 pl-11 text-lg">
-                {`Genres: ${
-                  props.genres
-                    ? props.genres.map((genre) => {
-                        return genre.name;
-                      })
-                    : "None"
-                }`}
-              </div>
-              <div className="p-4 pl-11 text-lg">{`Demographic: ${props.demographic}`}</div>
-              <div className="p-4 pl-11 text-lg">{`Serialization: ${
-                data.serialization.length
-                  ? data.serialization.map(
-                      (serialization: { node: { name: string } }) => {
-                        return `${serialization.node.name}`;
-                      }
-                    )
-                  : "None"
-              }`}</div>
-              <div className="p-4 pl-11 text-lg">{`Rank in MAL: ${data.rank}`}</div>
-              <div className="p-4 pl-11 text-lg">{`Mean: ${data.mean}`}</div>
-              <div
-                onClick={showSynopsis}
-                className="col-span-3 p-4 pl-11 text-lg cursor-pointer relative "
-              >
-                <div>
-                  Synopsis:{" "}
-                  <span className="blur-sm transition">{data.synopsis}</span>
-                </div>
-                <img
-                  className="absolute top-1/2 left-1/2 w-10 invert"
-                  src="/blind.svg"
-                  alt="click_to_blur_out"
-                />
-              </div>
-              {session && (
-                <>
+
+                {session && (
                   <div className="flex justify-center items-center">
                     <StatusButton
                       status={{
-                        id: data.my_list_status
-                        ? "delete" : "notOnList",
+                        id: data.my_list_status ? "delete" : "notOnList",
                         name: data.my_list_status
                           ? "Delete from your list"
                           : "Not on your list",
@@ -248,7 +199,61 @@ function InfoPage(props: {
                       deleteButton={true}
                     />
                   </div>
-                  <div className="col-span-4 text-xl text-center">
+                )}
+              </div>
+              <div className="md:col-span-2 xl:col-span-3 p-4 md:pl-11 text-lg">{`Japanese Title: ${data.alternative_titles.ja}`}</div>
+              <div className="md:col-span-2 p-4 md:pl-11 text-lg capitalize">
+                {`Authors: ${data.authors.map(
+                  (author: {
+                    node: { first_name: string; last_name: string };
+                    role: string;
+                  }) => {
+                    return `${author.node.first_name} ${author.node.last_name} (${author.role})`;
+                  }
+                )}`}
+              </div>
+              <div className="p-4 md:pl-11 text-lg capitalize">{`Status: ${data.status.replace(
+                "_",
+                " "
+              )}`}</div>
+              <div className="xl:col-span-2 p-4 md:pl-11 text-lg">
+                {`Genres: ${
+                  props.genres
+                    ? props.genres.map((genre) => {
+                        return genre.name;
+                      })
+                    : "None"
+                }`}
+              </div>
+              <div className="p-4 md:pl-11 text-lg">{`Demographic: ${props.demographic}`}</div>
+              <div className="p-4 md:pl-11 text-lg">{`Serialization: ${
+                data.serialization.length
+                  ? data.serialization.map(
+                      (serialization: { node: { name: string } }) => {
+                        return `${serialization.node.name}`;
+                      }
+                    )
+                  : "None"
+              }`}</div>
+              <div className="p-4 md:pl-11 text-lg">{`Rank in MAL: ${data.rank}`}</div>
+              <div className="p-4 md:pl-11 text-lg">{`Mean: ${data.mean}`}</div>
+              <div
+                onClick={showSynopsis}
+                className="md:col-span-4 xl:col-span-3 p-4 md:pl-11 text-lg cursor-pointer relative "
+              >
+                <div>
+                  Synopsis:{" "}
+                  <span className="blur-sm transition">{data.synopsis}</span>
+                </div>
+                <img
+                  className="absolute top-1/2 left-1/2 w-10 invert"
+                  src="/blind.svg"
+                  alt="click_to_blur_out"
+                />
+              </div>
+              {session && (
+                <>
+                  <div className="md:col-span-4 text-xl text-center flex items-center">
                     <img
                       className="invert h-4 inline-block "
                       src="/arrowDown.svg"
@@ -261,7 +266,7 @@ function InfoPage(props: {
                       src="/arrowDown.svg"
                     />
                   </div>
-                  <div className="col-span-4 flex flex-row justify-evenly">
+                  <div className="md:col-span-4 flex flex-row flex-wrap items-center justify-evenly gap-3">
                     {statuses.map((status) => {
                       return (
                         <StatusButton
@@ -277,8 +282,7 @@ function InfoPage(props: {
               )}
             </div>
           </>
-        )}
-        {!dataLoaded && (
+        ) : (
           <div className="h-5/6 flex items-center justify-center">
             <img className="p-8" src="/ball-triangle.svg" />
           </div>

@@ -67,9 +67,9 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
         <title>Manga Recommender</title>
         <meta property="og:title" content="Manga Recommender" key="title" />
       </Head>
-      <div className="flex-grow flex flex-col justify-center items-center overflow-x-hidden p-2">
+      <div className="md:flex-grow flex flex-col justify-center items-center overflow-x-hidden p-2">
         <div className="flex flex-col justify-center items-center">
-          <div className="flex flex-col justify-center items-center gap-3 w-2/4">
+          <div className="flex flex-col justify-center items-center gap-3 md:w-2/4 w-3/4">
             {genreLoaded && <OptionsGenerator dataFS={genres.data} />}
             {demogLoaded && <OptionsGenerator dataFS={demographics.data} />}
           </div>
@@ -83,8 +83,7 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
         </div>
         <div className="p-1" />
         <div className="w-96 h-full p-4 flex flex-col justify-center items-center">
-          {dataLoaded && <MangaStand mangaFS={data} />}
-          {!dataLoaded && (
+          {dataLoaded ? <MangaStand mangaFS={data} /> : (
             <div className="flex flex-col justify-center items-center h-full">
               <img src="/ball-triangle.svg" />
             </div>

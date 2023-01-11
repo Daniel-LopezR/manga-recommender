@@ -35,10 +35,11 @@ export default function Layout({ children }: LayoutProps) {
     );
   }
   return (
-    <div className="h-full flex flex-col">
+    <div className="xl:h-full flex flex-col">
       <Toast />
       <Header />
       {children}
+      <div className="p-6"></div>
       <Footer />
     </div>
   );

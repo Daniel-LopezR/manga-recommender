@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-center p-4 bg-gray-900">
+    <footer className="fixed bottom-0 w-screen flex items-center justify-center p-4 bg-gray-900">
       <a
         className="flex items-center"
         href="https://github.com/Daniel-LopezR/manga-recommender"
