@@ -1,11 +1,12 @@
+import React, { useState } from "react";
 import MangaStand from "../components/MangaStand";
 import OptionsGenerator from "../components/OptionsGenerator";
-import React, { useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
 import { prisma } from "@/backend/utils/prisma";
 import { trpc } from "@/utils/trpc";
 import { getRandomMangaId } from "@/utils/getRandomMangaId";
 import { transformOptions } from "@/utils/transformOptions";
-import Head from "next/head";
 
 type Options = {
   optionsIncluded: number[] | undefined;
@@ -40,7 +41,7 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
   const demogLoaded =
     !demographics.isLoading && demographics.data !== undefined;
 
-  function recommendMe () {
+  function recommendMe() {
     const genres = transformOptions(
       document.getElementById("menuOptions-Genres")!
     );
@@ -51,10 +52,10 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
     setDemographicsOpt(demographics);
     if (genres || demographics) {
       setLastMangaId(mangaId);
-    }else{
+    } else {
       setMangaId(() => getRandomMangaId(mangaCount, mangaId));
     }
-  };
+  }
   //Still not happy with this system, at least now it's impossible to get back to back the same manga
   if (dataLoaded && data.manga && lastMangaId !== undefined) {
     setMangaId(data.manga.id);
@@ -93,7 +94,13 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
             <MangaStand mangaFS={data} />
           ) : (
             <div className="flex flex-col justify-center items-center h-full">
-              <img src="/ball-triangle.svg" />
+              <Image
+                className="h-auto w-auto"
+                src="/ball-triangle.svg"
+                width={0}
+                height={0}
+                alt="Loading Image..."
+              />
             </div>
           )}
         </div>

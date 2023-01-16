@@ -34,9 +34,11 @@ const MangaStand: React.FC<{ mangaFS: MangaFromServer }> = (props) => {
                 alt={manga.title + " manga cover"}
               />
             ) : (
-              <img
+              <Image
                 className="p-6 invert h-full w-full"
                 src="/question-mark.svg"
+                width={0}
+                height={0}
                 alt={manga.title + " doesn't have a manga cover"}
               />
             )}

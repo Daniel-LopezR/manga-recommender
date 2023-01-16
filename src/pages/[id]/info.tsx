@@ -25,7 +25,6 @@ type Genre =
 
 type Demographic = string | undefined;
 
-
 const statuses = [
   {
     id: "reading",
@@ -247,24 +246,32 @@ function InfoPage(props: {
                   Synopsis:{" "}
                   <span className="blur-sm transition">{data.synopsis}</span>
                 </div>
-                <img
-                  className="absolute top-1/2 left-1/2 w-10 invert"
+                <Image
+                  className="absolute top-1/2 left-1/2 w-10 h-auto invert"
                   src="/blind.svg"
+                  width={0}
+                  height={0}
                   alt="click_to_blur_out"
                 />
               </div>
               {session && (
                 <>
                   <div className="md:col-span-4 text-xl text-center flex items-center justify-center gap-2">
-                    <img
-                      className="invert h-4 inline-block "
+                    <Image
+                      className="invert h-4 w-auto inline-block "
+                      width={0}
+                      height={0}
+                      alt="arrow_down"
                       src="/arrowDown.svg"
                     />
                     {data.my_list_status
                       ? ` ${data.title} is currently on your list, you can change the status below `
                       : ` ${data.title} is not on your list, select any status to add it in your list `}
-                    <img
-                      className="invert h-4 inline-block "
+                    <Image
+                      className="invert h-4 w-auto inline-block "
+                      width={0}
+                      height={0}
+                      alt="arrow_down"
                       src="/arrowDown.svg"
                     />
                   </div>
@@ -276,6 +283,7 @@ function InfoPage(props: {
                           statusSelected={data.my_list_status?.status}
                           mangaId={props.id}
                           updateStatus={updateStatus}
+                          key={status.id}
                         />
                       );
                     })}
@@ -286,7 +294,13 @@ function InfoPage(props: {
           </>
         ) : (
           <div className="h-5/6 flex items-center justify-center">
-            <img className="p-8" src="/ball-triangle.svg" />
+            <Image
+              className="p-8 h-auto w-auto"
+              width={0}
+              height={0}
+              alt="Loading Content..."
+              src="/ball-triangle.svg"
+            />
           </div>
         )}
         <div className="flex flex-col items-center justify-center p-4">

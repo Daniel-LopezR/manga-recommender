@@ -168,11 +168,7 @@ export const mangaRouter = router({
       mangas.splice(
         mangas.findIndex((manga) => manga.id === input.lastMangaId),
         1
-      );
-      
-      console.log(mangas.length);
-      
-
+      ); 
       return {
         manga: mangas.length
           ? mangas[getRandomMangaId(mangas.length) - 1]

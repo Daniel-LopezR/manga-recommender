@@ -7,6 +7,7 @@ export default function Footer() {
         className="flex items-center"
         href="https://github.com/Daniel-LopezR/manga-recommender"
         target="_blank"
+        rel="noreferrer"
       >
         <Image
           className="invert inline-block"

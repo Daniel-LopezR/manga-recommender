@@ -14,8 +14,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(req.body.method);
-  
   if (req.method === "PATCH" && req.body.method === undefined) {
     const updateStatusAPI = await malMangaApiCall<ListStatus>(
       req.method,

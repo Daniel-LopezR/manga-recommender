@@ -1,8 +1,10 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
 } from "react";
 import styles from "./Toast.module.css";
+import Image from "next/image";
 import {
   StatusToastContext,
   StatusToastContextType,
@@ -18,12 +20,11 @@ function Toast() {
     StatusToastContext
   ) as StatusToastContextType;
 
-  const deleteToast = (id: number) => {
-    // Try to add class so toast has a dissapear animation
+  const deleteToast = useCallback((id: number) => {
     document.getElementById(id.toString())?.classList.add("hidden");
     removeStatusToast(Number(id));
-  };
-
+  }, [removeStatusToast]);
+  
   useEffect(() => {
     const interval = setInterval(() => {
       if (statusToasts && statusToasts.length !== 0) {
@@ -33,7 +34,7 @@ function Toast() {
     return () => {
       clearInterval(interval);
     };
-  }, [statusToasts]);
+  }, [statusToasts, deleteToast]);
 
   return (
     <>
@@ -58,13 +59,18 @@ function Toast() {
                 } rounded-t-lg`}
               >
                 <p className="font-bold text-white flex items-center">
-                  <img
-                    className="invert h-4 inline-block pr-2"
+                  <Image
+                    className="invert h-4 inline-block pr-2 w-auto"
                     src={
                       toast.type === toastType.error
                         ? "/cross.svg"
                         : "/check.svg"
                     }
+                    width={0}
+                    height={0}
+                    alt={toast.type === toastType.error
+                      ? "cross_img"
+                      : "check_img"}
                   />
                   {toast.type.toString()}
                 </p>

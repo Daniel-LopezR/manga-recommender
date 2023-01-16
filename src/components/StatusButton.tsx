@@ -72,19 +72,16 @@ function StatusButton({
   };
 
   return (
-    <>
-      <div
-        className={`p-2 text-center border rounded-xl transition cursor-pointer ${
-          status.color.border
-        } ${
-          statusSelected === status.id ? status.color.bg : status.color.hoverBg
-        } `}
-        onClick={changeStatus}
-        key={status.id}
-      >
-        {status.name}
-      </div>
-    </>
+    <div
+      className={`p-2 text-center border rounded-xl transition cursor-pointer ${
+        status.color.border
+      } ${
+        statusSelected === status.id ? status.color.bg : status.color.hoverBg
+      } `}
+      onClick={changeStatus}
+    >
+      {status.name}
+    </div>
   );
 }
 
