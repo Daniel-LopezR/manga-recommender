@@ -35,7 +35,7 @@ function StatusButton({
   ) as StatusToastContextType;
   const { data: session } = useSession();
 
-  const changeStatus = async () => {
+  const changeStatus = () => {
     if (deleteButton) {
       if (status.id === "delete") {
         axios

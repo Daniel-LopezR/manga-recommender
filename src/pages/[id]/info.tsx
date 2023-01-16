@@ -2,7 +2,7 @@ import StatusButton from "@/components/StatusButton";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { MouseEventHandler, useContext, useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import { trpc } from "@/utils/trpc";
 import { prisma } from "@/backend/utils/prisma";
 import { useSession } from "next-auth/react";
@@ -24,6 +24,55 @@ type Genre =
   | undefined;
 
 type Demographic = string | undefined;
+
+
+const statuses = [
+  {
+    id: "reading",
+    name: "Reading",
+    color: {
+      border: "border-green-500",
+      bg: "bg-green-500",
+      hoverBg: "hover:bg-green-500",
+    },
+  },
+  {
+    id: "completed",
+    name: "Completed",
+    color: {
+      border: "border-blue-500",
+      bg: "bg-blue-500",
+      hoverBg: "hover:bg-blue-500",
+    },
+  },
+  {
+    id: "on_hold",
+    name: "On hold",
+    color: {
+      border: "border-amber-500",
+      bg: "bg-amber-500",
+      hoverBg: "hover:bg-amber-500",
+    },
+  },
+  {
+    id: "dropped",
+    name: "Dropped",
+    color: {
+      border: "border-red-500",
+      bg: "bg-red-500",
+      hoverBg: "hover:bg-red-500",
+    },
+  },
+  {
+    id: "plan_to_read",
+    name: "Plan to read",
+    color: {
+      border: "border-gray-500",
+      bg: "bg-gray-500",
+      hoverBg: "hover:bg-gray-500",
+    },
+  },
+];
 
 export async function getStaticPaths() {
   const allManga = await prisma.manga.findMany({
@@ -78,53 +127,6 @@ function InfoPage(props: {
     : trpc["get-manga-info"].useQuery({
         mal_api_id: props.id,
       });
-  const statuses = [
-    {
-      id: "reading",
-      name: "Reading",
-      color: {
-        border: "border-green-500",
-        bg: "bg-green-500",
-        hoverBg: "hover:bg-green-500",
-      },
-    },
-    {
-      id: "completed",
-      name: "Completed",
-      color: {
-        border: "border-blue-500",
-        bg: "bg-blue-500",
-        hoverBg: "hover:bg-blue-500",
-      },
-    },
-    {
-      id: "on_hold",
-      name: "On hold",
-      color: {
-        border: "border-amber-500",
-        bg: "bg-amber-500",
-        hoverBg: "hover:bg-amber-500",
-      },
-    },
-    {
-      id: "dropped",
-      name: "Dropped",
-      color: {
-        border: "border-red-500",
-        bg: "bg-red-500",
-        hoverBg: "hover:bg-red-500",
-      },
-    },
-    {
-      id: "plan_to_read",
-      name: "Plan to read",
-      color: {
-        border: "border-gray-500",
-        bg: "bg-gray-500",
-        hoverBg: "hover:bg-gray-500",
-      },
-    },
-  ];
   const dataLoaded = !isLoading && data !== undefined;
 
   const showSynopsis: MouseEventHandler<HTMLDivElement> = (event) => {
@@ -253,7 +255,7 @@ function InfoPage(props: {
               </div>
               {session && (
                 <>
-                  <div className="md:col-span-4 text-xl text-center flex items-center">
+                  <div className="md:col-span-4 text-xl text-center flex items-center justify-center gap-2">
                     <img
                       className="invert h-4 inline-block "
                       src="/arrowDown.svg"

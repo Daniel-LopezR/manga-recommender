@@ -22,18 +22,15 @@ export async function getStaticProps() {
 
 export default function Home({ mangaCount }: { mangaCount: number }) {
   const [mangaId, setMangaId] = useState(() => getRandomMangaId(mangaCount));
-  const [genreOpt, setGenreOpt] = useState<Options | undefined>(
-    () => undefined
-  );
-  const [demographicsOpt, setDemographicsOpt] = useState<Options | undefined>(
-    () => undefined
-  );
+  const [lastMangaId, setLastMangaId] = useState<number | undefined>();
+  const [genreOpt, setGenreOpt] = useState<Options | undefined>();
+  const [demographicsOpt, setDemographicsOpt] = useState<Options | undefined>();
   const { data, isLoading } =
-    genreOpt || demographicsOpt
+    lastMangaId !== undefined
       ? trpc["get-manga-by-options"].useQuery({
           genres: genreOpt,
           demographics: demographicsOpt,
-          lastMangaId: mangaId,
+          lastMangaId: lastMangaId,
         })
       : trpc["get-manga-by-id"].useQuery({ id: mangaId });
   const genres = trpc["get-all-genres"].useQuery();
@@ -43,22 +40,25 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
   const demogLoaded =
     !demographics.isLoading && demographics.data !== undefined;
 
-  const recommendMe = () => {
-    setGenreOpt(
-      transformOptions(document.getElementById("menuOptions-Genres")!)
+  function recommendMe () {
+    const genres = transformOptions(
+      document.getElementById("menuOptions-Genres")!
     );
-    setDemographicsOpt(
-      transformOptions(document.getElementById("menuOptions-Demographics")!)
+    const demographics = transformOptions(
+      document.getElementById("menuOptions-Demographics")!
     );
-    if (!genreOpt && !demographicsOpt) {
+    setGenreOpt(genres);
+    setDemographicsOpt(demographics);
+    if (genres || demographics) {
+      setLastMangaId(mangaId);
+    }else{
       setMangaId(() => getRandomMangaId(mangaCount, mangaId));
     }
   };
-  // TODO: Rethink how i get manga by id/options and state of mangaId to better design the logic and stop getting back to back the same manga
-  if (dataLoaded && data.manga && (genreOpt || demographicsOpt)) {
+  //Still not happy with this system, at least now it's impossible to get back to back the same manga
+  if (dataLoaded && data.manga && lastMangaId !== undefined) {
     setMangaId(data.manga.id);
-    setGenreOpt(undefined);
-    setDemographicsOpt(undefined);
+    setLastMangaId(undefined);
   }
 
   return (
@@ -74,16 +74,24 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
             {demogLoaded && <OptionsGenerator dataFS={demographics.data} />}
           </div>
           <div className="p-2" />
-          <button
-            onClick={recommendMe}
-            className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer"
-          >
-            Recommend me!
-          </button>
+          {dataLoaded ? (
+            <button
+              onClick={recommendMe}
+              className="py-2 px-4 border rounded-full hover:bg-red-900 transition cursor-pointer"
+            >
+              Recommend me!
+            </button>
+          ) : (
+            <button className="py-2 px-4 border rounded-full bg-red-900 transition cursor-pointer">
+              Recommending...
+            </button>
+          )}
         </div>
         <div className="p-1" />
         <div className="w-96 h-full p-4 flex flex-col justify-center items-center">
-          {dataLoaded ? <MangaStand mangaFS={data} /> : (
+          {dataLoaded ? (
+            <MangaStand mangaFS={data} />
+          ) : (
             <div className="flex flex-col justify-center items-center h-full">
               <img src="/ball-triangle.svg" />
             </div>

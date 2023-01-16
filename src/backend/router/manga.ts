@@ -164,9 +164,18 @@ export const mangaRouter = router({
           ],
         },
       });
+       // Deletes the anterior manga if present
+      mangas.splice(
+        mangas.findIndex((manga) => manga.id === input.lastMangaId),
+        1
+      );
+      
+      console.log(mangas.length);
+      
+
       return {
         manga: mangas.length
-          ? mangas[getRandomMangaId(mangas.length, input.lastMangaId) - 1]
+          ? mangas[getRandomMangaId(mangas.length) - 1]
           : null,
       };
     }),

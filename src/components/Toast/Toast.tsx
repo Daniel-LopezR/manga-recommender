@@ -37,11 +37,11 @@ function Toast() {
 
   return (
     <>
-      <div className=" fixed box-border top-3 right-3">
+      <div className=" fixed box-border top-3 right-3 z-20">
         {statusToasts &&
           statusToasts.map((toast) => (
             <div
-              className={`bg-transparent shadow-lg mx-auto w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block mb-3 ${styles["toast-animation-in"]}`}
+              className={`bg-transparent shadow-lg mx-auto w-60 md:w-96 max-w-full text-sm pointer-events-auto bg-clip-padding rounded-lg block mb-3 ${styles["toast-animation-in"]}`}
               key={toast.id}
               id={toast.id.toString()}
               aria-live="assertive"
