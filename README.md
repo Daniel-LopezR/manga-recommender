@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+
+# Manga Recommender
+
+## About
+
+This apps gives you a random manga based if you want or not on the genres and demographics selected. You also have the possibility to log in with a MyAnimeList account to add the mangas you get recommended to your list or update their status.
+
+You can try it now just by clicking on this link, [`Manga Recommender`](https://manga-recommender.vercel.app/).
+
+This project was bootstrapped with [`create t3-app`](https://create.t3.gg/).
 
 ## Getting Started
 
