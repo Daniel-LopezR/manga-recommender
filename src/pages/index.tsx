@@ -67,6 +67,11 @@ export default function Home({ mangaCount }: { mangaCount: number }) {
       <Head>
         <title>Manga Recommender</title>
         <meta property="og:title" content="Manga Recommender" key="title" />
+        <meta
+          name="description"
+          content="Manga recommender app, select between multiple genres and demographics or not and let the app decide a random manga for you"
+          key="desc"
+        />
       </Head>
       <div className="md:flex-grow flex flex-col justify-center items-center overflow-x-hidden p-2">
         <div className="flex flex-col justify-center items-center">

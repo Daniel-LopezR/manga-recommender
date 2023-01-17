@@ -154,6 +154,13 @@ function InfoPage(props: {
           content="Info - Manga Recommender"
           key="title"
         />
+        <meta
+          name="description"
+          content={`Info page ${
+            dataLoaded ? `${data.title}` : "for the selected manga"
+          }, get tons of info about it and login with your MyAnimeList account to save this manga in your list!`}
+          key="desc"
+        />
       </Head>
       <div className="h-full flex flex-col items-center justify-center overflow-x-hidden">
         {dataLoaded ? (
